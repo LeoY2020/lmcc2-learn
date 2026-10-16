@@ -75,6 +75,6 @@ Material for MkDocs 等组件的 MIT 许可要求保留版权与许可声明：
 
 ## 六、其他
 
-- **TodoMVC**（https://github.com/tastejs/todomvc，MIT）：第三题的题面基于其 JavaScript ES5 示例，本作品仅作文字说明，**未包含其源代码**。
+- **TodoMVC**（(https://github.com/tastejs/todomvc)[https://github.com/tastejs/todomvc]，MIT）：第三题的题面基于其 JavaScript ES5 示例，本作品仅作文字说明，**未包含其源代码**。
 - **字体**：站点若引用在线字体（如 Roboto），由 Google Fonts 提供，遵循各自的字体许可（多为 SIL OFL 1.1）；字体文件不随本仓库分发。
 - 本清单如与权利人主张不一致，以权利人主张为准；请通过仓库 Issue 联系我们更正或删除。
