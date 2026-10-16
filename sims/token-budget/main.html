@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token 预算计算器</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<h1>Token 预算计算器</h1>
+
+<section>
+  <h2>第一题：Prompt 与生成额度</h2>
+  <div class="row"><label>System Prompt token 数</label><input id="pt" type="number" value="280" min="0" step="10"></div>
+  <div class="row"><label>每次生成（思考+答案）平均 token</label><input id="gt" type="number" value="300" min="0" step="10"></div>
+  <div class="row"><label>已用调试次数（上限 20）</label><input id="runs" type="number" value="5" min="0" step="1"></div>
+  <div id="q1" class="out"></div>
+</section>
+
+<section>
+  <h2>第三题：用量系数</h2>
+  <div class="row"><label>累计用量 T</label><input id="T" type="number" value="130000" min="0" step="1000"></div>
+  <div class="row"><label>功能原始分 S</label><input id="S" type="number" value="80" min="0" max="100" step="5"></div>
+  <div id="q3" class="out"></div>
+</section>
+<script src="script.js"></script>
+</body></html>

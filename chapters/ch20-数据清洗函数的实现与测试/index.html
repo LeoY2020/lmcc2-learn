@@ -1,0 +1,3208 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="2026 LMCC 第二轮三题（Prompt 调优 / LoRA 数据 / Vibe Coding）复习手册">
+      
+      
+      
+      
+        <link rel="prev" href="../ch19-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%B8%85%E6%B4%97%E4%B8%8E%E8%A7%84%E8%8C%83%E5%8C%96/">
+      
+      
+        <link rel="next" href="../ch21-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E4%B8%8E%E8%AE%AD%E7%BB%83%E6%B5%81%E7%A8%8B/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>第 20 章 数据清洗函数的实现与测试 - LMCC 第二轮通关手册</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#20" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="LMCC 第二轮通关手册" class="md-header__button md-logo" aria-label="LMCC 第二轮通关手册" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LMCC 第二轮通关手册
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              第 20 章 数据清洗函数的实现与测试
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="切换到深色"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="切换到深色" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="切换到浅色"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="切换到浅色" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="LMCC 第二轮通关手册" class="md-nav__button md-logo" aria-label="LMCC 第二轮通关手册" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LMCC 第二轮通关手册
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../course-description/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    课程说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch01-%E8%80%83%E8%AF%95%E5%BD%A2%E5%BC%8F%E4%B8%8E%E8%AF%84%E5%88%86%E6%9C%BA%E5%88%B6/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第一部分考试与工具
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第一部分考试与工具
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch02-%E4%B8%8A%E6%9C%BA%E7%8E%AF%E5%A2%83%E4%B8%8E%E5%B7%A5%E5%85%B7%E9%93%BE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 2 章 上机环境与工具链
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch03-%E4%BD%9C%E7%AD%94%E7%BA%AA%E5%BE%8B%E4%B8%8E%E4%BA%A4%E4%BB%98%E8%A6%81%E6%B1%82/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 3 章 作答纪律与交付要求
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch04-python-%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第二部分Python 程序设计
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第二部分Python 程序设计
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch05-%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%8E%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 5 章 字符串与文本处理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch06-%E5%88%97%E8%A1%A8-%E5%85%83%E7%BB%84-%E9%9B%86%E5%90%88-%E5%AD%97%E5%85%B8%E4%B8%8E%E6%8E%A8%E5%AF%BC%E5%BC%8F/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 6 章 列表、元组、集合、字典与推导式
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch07-%E6%8E%A7%E5%88%B6%E6%B5%81%E4%B8%8E%E5%87%BD%E6%95%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 7 章 控制流与函数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch08-%E6%A8%A1%E5%9D%97-%E6%96%87%E4%BB%B6%E4%B8%8E-json/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 8 章 模块、文件与 JSON
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch09-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E4%B8%8E%E7%A8%8B%E5%BA%8F%E8%B0%83%E8%AF%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 9 章 正则表达式与程序调试
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch10-%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第三部分大语言模型与提示词工程
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第三部分大语言模型与提示词工程
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch11-%E5%AF%B9%E8%AF%9D%E7%BB%93%E6%9E%84-%E6%A8%A1%E6%9D%BF%E4%B8%8E%E6%8E%A8%E7%90%86%E6%A8%A1%E5%BC%8F/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 11 章 对话结构、模板与推理模式
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch12-%E6%8F%90%E7%A4%BA%E8%AF%8D%E7%9A%84%E7%BB%93%E6%9E%84%E4%B8%8E%E5%86%99%E6%B3%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 12 章 提示词的结构与写法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch13-%E4%BB%BB%E5%8A%A1%E8%A7%84%E5%88%99%E7%9A%84%E8%A7%A3%E6%9E%90%E4%B8%8E%E8%A1%A8%E8%BE%BE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 13 章 任务规则的解析与表达
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch14-%E8%BE%93%E5%87%BA%E6%A0%BC%E5%BC%8F%E7%BA%A6%E6%9D%9F/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 14 章 输出格式约束
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch15-%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%E4%B8%8E%E8%BE%B9%E7%95%8C%E6%9D%A1%E4%BB%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 15 章 提示词注入与边界条件
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch16-%E6%8F%90%E7%A4%BA%E8%AF%8D%E8%BF%AD%E4%BB%A3%E4%B8%8E%E9%A2%84%E7%AE%97%E7%AE%A1%E7%90%86/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 16 章 提示词迭代与预算管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch17-%E4%BB%8E%E8%A7%84%E6%A0%BC%E5%88%B0%E7%A8%8B%E5%BA%8F%E9%80%BB%E8%BE%91/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第四部分数据清洗与函数实现
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第四部分数据清洗与函数实现
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch18-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%A0%A1%E9%AA%8C%E4%B8%8E%E5%AE%89%E5%85%A8%E5%8F%96%E5%80%BC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 18 章 数据类型校验与安全取值
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch19-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%B8%85%E6%B4%97%E4%B8%8E%E8%A7%84%E8%8C%83%E5%8C%96/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 19 章 字符串清洗与规范化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 20 章 数据清洗函数的实现与测试
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 20 章 数据清洗函数的实现与测试
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#201" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        20.1 完整参考实现
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#202" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        20.2 逐段讲解
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="20.2 逐段讲解">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 1 段：导入与函数说明
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 2 段：开头就是类型检查
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 3 段：三个常量与一个有序字典
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 4 段：循环开头做两道"跳过"检查
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 5 段：删空白与格式检查
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 6 段：标签归一化与拼接
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 7 段：稳定去重与冲突处理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 8 段：返回
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 9 段：把整条流水线再走一遍
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#203-p01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        20.3 完整推演公开点 P01
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#204-p02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        20.4 完整推演公开点 P02
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#205" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        20.5 自测脚本：把两个公开点写成断言
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#206" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        20.6 常见失分点表
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch21-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E4%B8%8E%E8%AE%AD%E7%BB%83%E6%B5%81%E7%A8%8B/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第五部分机器学习与参数高效微调
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第五部分机器学习与参数高效微调
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch22-%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E6%9E%84%E9%80%A0%E4%B8%8E%E6%A0%87%E7%AD%BE%E8%B4%A8%E9%87%8F/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 22 章 训练数据构造与标签质量
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch23-%E5%8F%82%E6%95%B0%E9%AB%98%E6%95%88%E5%BE%AE%E8%B0%83-lora-%E4%B8%8E%E8%AE%AD%E7%BB%83%E5%8F%82%E6%95%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 23 章 参数高效微调（LoRA）与训练参数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch24-%E6%A8%A1%E5%9E%8B-%E5%88%86%E8%AF%8D%E5%99%A8%E4%B8%8E%E6%8E%A8%E7%90%86%E6%B5%81%E7%A8%8B/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第六部分模型、推理与语义检索
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第六部分模型、推理与语义检索
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch25-%E5%88%86%E8%AF%8D%E5%99%A8%E4%B8%8E%E5%BA%8F%E5%88%97%E5%A4%84%E7%90%86/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 25 章 分词器与序列处理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch26-%E5%AF%B9%E8%AF%9D%E6%A8%A1%E6%9D%BF%E7%9A%84%E5%AE%9E%E7%8E%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 26 章 对话模板的实现
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch27-%E7%94%9F%E6%88%90%E5%8F%82%E6%95%B0%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 27 章 生成参数的实现细节
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch28-%E6%96%87%E6%9C%AC%E5%90%91%E9%87%8F%E4%B8%8E%E8%AF%AD%E4%B9%89%E7%9B%B8%E4%BC%BC%E5%BA%A6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 28 章 文本向量与语义相似度
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch29-%E4%B8%8E%E7%BC%96%E7%A8%8B-agent-%E5%8D%8F%E4%BD%9C%E7%9A%84%E6%96%B9%E6%B3%95/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第七部分工程实践与人机协作
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第七部分工程实践与人机协作
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch30-token-%E9%A2%84%E7%AE%97%E4%B8%8E%E5%B7%A5%E7%A8%8B%E6%88%90%E6%9C%AC%E7%AE%A1%E7%90%86/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 30 章 Token 预算与工程成本管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch31-%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6%E4%B8%8E%E5%AE%9E%E9%AA%8C%E8%AE%B0%E5%BD%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 31 章 版本控制与实验记录
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch32-%E6%A1%88%E4%BE%8B%E4%B8%80-%E6%8B%AC%E5%8F%B7%E5%BA%8F%E5%88%97%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第八部分应用案例与应试
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第八部分应用案例与应试
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch33-%E6%A1%88%E4%BE%8B%E4%BA%8C-todomvc-%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 33 章 案例二：TodoMVC 功能实现
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch34-%E5%A4%87%E8%80%83%E8%AE%A1%E5%88%92%E4%B8%8E%E8%80%83%E5%9C%BA%E7%AD%96%E7%95%A5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 34 章 备考计划与考场策略
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch35-%E6%A8%A1%E6%9D%BF%E5%BA%93/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 35 章 模板库
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch36-%E7%BB%BC%E5%90%88%E7%BB%83%E4%B9%A0-%E5%90%AB%E7%AD%94%E6%A1%88/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 36 章 综合练习（含答案）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch37-%E9%80%9F%E6%9F%A5%E8%A1%A8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 37 章 速查表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../apA-%E9%99%84%E5%BD%95-a-2026-%E4%B8%89%E9%A2%98%E8%A7%84%E6%A0%BC%E9%80%9F%E6%9F%A5/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录规格速查与术语手册
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    附录规格速查与术语手册
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../apB-%E9%99%84%E5%BD%95-b-%E6%9C%AF%E8%AF%AD%E8%A1%A8%E4%B8%8E%E6%8A%A5%E9%94%99%E5%AF%B9%E7%85%A7%E8%A1%A8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录 B 术语表与报错对照表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../learning-graph/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    学习图谱
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_12" id="__nav_12_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    学习图谱
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learning-graph/list-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概念清单
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learning-graph/quality-metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    质量指标
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learning-graph/taxonomy-distribution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分类分布
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    术语表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quiz/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    自测练习
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    常见问题
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../sims/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    交互模拟
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_16" id="__nav_16_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    交互模拟
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sims/bracket-validator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    括号序列判定
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sims/token-budget/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Token 预算计算器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    关于本书
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    资料来源
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#201" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        20.1 完整参考实现
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#202" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        20.2 逐段讲解
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="20.2 逐段讲解">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 1 段：导入与函数说明
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 2 段：开头就是类型检查
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 3 段：三个常量与一个有序字典
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 4 段：循环开头做两道"跳过"检查
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 5 段：删空白与格式检查
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 6 段：标签归一化与拼接
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 7 段：稳定去重与冲突处理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 8 段：返回
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第 9 段：把整条流水线再走一遍
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#203-p01" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        20.3 完整推演公开点 P01
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#204-p02" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        20.4 完整推演公开点 P02
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#205" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        20.5 自测脚本：把两个公开点写成断言
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#206" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        20.6 常见失分点表
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="20">第 20 章 数据清洗函数的实现与测试<a class="headerlink" href="#20" title="Permanent link">&para;</a></h1>
+<div class="admonition info">
+<p class="admonition-title">本章目标</p>
+<p>读完这一章，你能：一字不改地用上这份参考实现；说清每一段在防什么；把两个公开函数点 P01、P02 从输入一步步推到期望输出；并写出自己的自测脚本。</p>
+</div>
+<h2 id="201">20.1　完整参考实现<a class="headerlink" href="#201" title="Permanent link">&para;</a></h2>
+<p>下面这份代码可以直接作为 <code>submission.py</code> 提交。它满足第 36 章的全部六条规则。先通读一遍，不用急着抄，后面会逐段讲。</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">process_data</span><span class="p">(</span><span class="n">records</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;按官方规则清洗原始记录，返回按原始顺序排列的标准记录列表。&quot;&quot;&quot;</span>
+    <span class="c1"># 常量写在函数内部（规则 6）</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">records</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;records 必须是列表&quot;</span><span class="p">)</span>
+
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^[()]{2,12}$&quot;</span><span class="p">)</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;YES&quot;</span><span class="p">,</span> <span class="s2">&quot;NO&quot;</span><span class="p">)</span>
+    <span class="n">kept</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>      <span class="c1"># 记住插入顺序，实现&quot;稳定&quot;去重</span>
+
+    <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">records</span><span class="p">:</span>
+        <span class="c1"># 规则 1：不是字典，跳过</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="n">sequence</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sequence&quot;</span><span class="p">)</span>
+        <span class="n">valid</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;valid&quot;</span><span class="p">)</span>
+        <span class="c1"># 规则 1：缺字段或字段不是字符串，跳过</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">valid</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># 规则 2：删除全部空白，再检查长度与字符</span>
+        <span class="n">cleaned</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">sequence</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">cleaned</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># 规则 3：标签去首尾空白并转大写，只接受 YES / NO</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">valid</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">input_text</span> <span class="o">=</span> <span class="s2">&quot;序列：&quot;</span> <span class="o">+</span> <span class="n">cleaned</span>
+        <span class="n">output_text</span> <span class="o">=</span> <span class="s2">&quot;[Valid]: &quot;</span> <span class="o">+</span> <span class="n">label</span>
+
+        <span class="c1"># 规则 4：按 input 稳定去重；冲突则抛 ValueError</span>
+        <span class="n">old</span> <span class="o">=</span> <span class="n">kept</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">input_text</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">old</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">kept</span><span class="p">[</span><span class="n">input_text</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="n">input_text</span><span class="p">,</span> <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="n">output_text</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="n">old</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">output_text</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;同一 input 出现不同 output：&quot;</span> <span class="o">+</span> <span class="n">input_text</span><span class="p">)</span>
+
+    <span class="c1"># 规则 5：返回列表，不打印、不扩增</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">kept</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+</code></pre></div>
+<h2 id="202">20.2　逐段讲解<a class="headerlink" href="#202" title="Permanent link">&para;</a></h2>
+<h3 id="1">第 1 段：导入与函数说明<a class="headerlink" href="#1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">process_data</span><span class="p">(</span><span class="n">records</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;按官方规则清洗原始记录，返回按原始顺序排列的标准记录列表。&quot;&quot;&quot;</span>
+</code></pre></div>
+<p><code>re</code> 是正则表达式模块，用来"按模式找/替换文本"，这里干两件事：删空白、检查格式。<code>OrderedDict</code> 是"记住添加顺序的字典"，天然适合稳定去重。两个都是 <code>collections</code> 和标准库范围内的东西，符合规则 6。三引号里的那一行是文档字符串，说明函数用途，允许保留。</p>
+<h3 id="2">第 2 段：开头就是类型检查<a class="headerlink" href="#2" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">records</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;records 必须是列表&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><code>raise</code> 是"主动报错"的语句，<code>ValueError</code> 是"参数值不合适"这类错误的名字，规则 1 要求的就是它。<strong>顺序很重要</strong>：这一句必须写在循环之前，否则后面 <code>for record in records</code> 遇到一个字符串会去逐字符迭代，行为完全跑偏。把最严重的错误挡在门口，是写函数的通用习惯。</p>
+<h3 id="3">第 3 段：三个常量与一个有序字典<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>    pattern = re.compile(r&quot;^[()]{2,12}$&quot;)
+    labels = (&quot;YES&quot;, &quot;NO&quot;)
+    kept = OrderedDict()
+</code></pre></div>
+<p><code>re.compile</code> 把正则"预编译"成一个可复用的对象，比每次重新解析快一点，也让下面的判断更干净。<code>^</code> 表示开头，<code>$</code> 表示结尾，中间 <code>[()]{2,12}</code> 表示"2 到 12 个 <code>(</code> 或 <code>)</code>"，所以整串必须完全由这些字符组成、且长度合规。<code>labels</code> 是允许的标签元组。<code>kept</code> 是去重用的有序字典，键是 <code>input</code>，值是那条标准记录。</p>
+<p>注意 <code>r"..."</code> 这个写法：字符串前面的 <code>r</code> 表示"原样字符串"，里面的反斜杠不被当转义符，写正则时不容易出错。</p>
+<h3 id="4">第 4 段：循环开头做两道"跳过"检查<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>    <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">records</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="n">sequence</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sequence&quot;</span><span class="p">)</span>
+        <span class="n">valid</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;valid&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">valid</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">continue</span>
+</code></pre></div>
+<p><code>continue</code> 的意思是"放弃本轮，直接进入下一轮"。第一道检查挡掉 <code>null</code> 这种非字典项（P02 第一项就是它）。第二道先用 <code>dict.get()</code> 取字段——这个写法在字段<strong>不存在</strong>时返回 <code>None</code>，而不是报错——然后要求两个都必须是字符串。<code>isinstance(x, str)</code> 就是"x 是不是字符串"的判断。缺字段、字段是数字、字段是 <code>None</code>，全部在这里被跳过。</p>
+<div class="admonition tip">
+<p class="admonition-title">技巧</p>
+<p>用 or 把两个类型检查写在一行，短路求值会让它足够快，也读得清楚。不要写成 if "sequence" not in record 再取值再用——那是两步，两步之间还要处理类型，反而更容易漏。</p>
+</div>
+<h3 id="5">第 5 段：删空白与格式检查<a class="headerlink" href="#5" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>        <span class="n">cleaned</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s+&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">sequence</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">cleaned</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+</code></pre></div>
+<p><code>re.sub(模式, 替换成什么, 原字符串)</code> 做替换。<code>\s+</code> 表示"一个或多个空白字符"，替换成空串就等于把空白全部删掉。删完用预编译的 <code>pattern.match()</code> 检查：匹配成功返回一个对象，失败返回 <code>None</code>。所以 <code>is None</code> 就是"格式不合格，跳过整条记录"。空串、长度 1、长度超过 12、含 <code>a</code> 或全角括号的串，全都在这里被淘汰。</p>
+<div class="admonition warning">
+<p class="admonition-title">坑</p>
+<p>不要用 sequence.strip() 代替 re.sub。strip() 只去两端，中间的空白会留下；那么 ( )(()) 就会变成长度 8 的 ( )(())，正则匹配失败被误删，P01 直接错一个点。</p>
+</div>
+<h3 id="6">第 6 段：标签归一化与拼接<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>        <span class="n">label</span> <span class="o">=</span> <span class="n">valid</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">input_text</span> <span class="o">=</span> <span class="s2">&quot;序列：&quot;</span> <span class="o">+</span> <span class="n">cleaned</span>
+        <span class="n">output_text</span> <span class="o">=</span> <span class="s2">&quot;[Valid]: &quot;</span> <span class="o">+</span> <span class="n">label</span>
+</code></pre></div>
+<p><code>strip()</code> 去首尾空白，<code>upper()</code> 转大写，<code>" yes "</code> 于是变成 <code>"YES"</code>。<code>label not in labels</code> 挡掉 <code>"MAYBE"</code> 这类非法标签。两行拼接是整道题的"格式核心"：<code>序列：</code>里的冒号是全角，<code>[Valid]:</code>里的冒号是半角且后面带一个空格。两处都写错一个字符，整个函数点就废了，所以务必逐字符核对。</p>
+<h3 id="7">第 7 段：稳定去重与冲突处理<a class="headerlink" href="#7" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>        <span class="n">old</span> <span class="o">=</span> <span class="n">kept</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">input_text</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">old</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">kept</span><span class="p">[</span><span class="n">input_text</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="n">input_text</span><span class="p">,</span> <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="n">output_text</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="n">old</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">output_text</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;同一 input 出现不同 output：&quot;</span> <span class="o">+</span> <span class="n">input_text</span><span class="p">)</span>
+</code></pre></div>
+<p>这是全函数最巧的一段。<code>kept.get(input_text)</code> 取之前存过的记录：</p>
+<ul>
+<li>
+<p>拿不到（<code>None</code>）→ 说明这是这个 <code>input</code> 第一次出现，存进去。</p>
+</li>
+<li>
+<p>拿得到，而且 <code>output</code> 相同 → 完全重复，什么都不做（相当于跳过），保留首次出现的那条。</p>
+</li>
+<li>
+<p>拿得到，但 <code>output</code> 不同 → 标签自相矛盾，<code>raise ValueError</code>。</p>
+</li>
+</ul>
+<p>为什么用字典而不是列表？因为字典的键查找是"一次就能找到"，不用从头扫到尾；同时 <code>OrderedDict</code> 会记住插入顺序，最后 <code>list(kept.values())</code> 拿到的就是稳定的顺序。如果用 <code>set</code> 去重，顺序就没了。</p>
+<h3 id="8">第 8 段：返回<a class="headerlink" href="#8" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">kept</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+</code></pre></div>
+<p>把字典里的值转成列表返回。列表里的每一项都是新造的字典，只有 <code>input</code> 和 <code>output</code> 两个键——这正是训练数据要的格式。</p>
+<h3 id="9">第 9 段：把整条流水线再走一遍<a class="headerlink" href="#9" title="Permanent link">&para;</a></h3>
+<p>把上面八段串起来，函数对每条记录做的事情固定是这七步：</p>
+<ul>
+<li>
+<p>这一项是不是字典？不是就跳过。</p>
+</li>
+<li>
+<p>能不能取到两个字符串字段？不能就跳过。</p>
+</li>
+<li>
+<p>删掉 <code>sequence</code> 里的全部空白。</p>
+</li>
+<li>
+<p>删完的串是不是"2 至 12 个半角括号"？不是就跳过。</p>
+</li>
+<li>
+<p><code>valid</code> 去首尾空白并转大写，是不是 YES 或 NO？不是就跳过。</p>
+</li>
+<li>
+<p>拼出 <code>input</code> 与 <code>output</code>，按 <code>input</code> 查表：没有就存入；有且 <code>output</code> 相同就跳过；有但 <code>output</code> 不同就抛 <code>ValueError</code>。</p>
+</li>
+<li>
+<p>全部走完后，把表里的值按插入顺序变成列表返回。</p>
+</li>
+</ul>
+<p>记住这七步，你就能对着任何一条数据说出"它会走到哪一步被拦住"。这在调试时特别有用：一条数据消失得不明不白，只要按顺序问一遍，马上就知道是哪一步把它拿掉了。</p>
+<h2 id="203-p01">20.3　完整推演公开点 P01<a class="headerlink" href="#203-p01" title="Permanent link">&para;</a></h2>
+<p>P01 的输入与期望（题面原文）：</p>
+<div class="highlight"><pre><span></span><code>records：
+[
+ {&quot;sequence&quot;:&quot;( )(())&quot;,&quot;valid&quot;:&quot; yes &quot;},
+ {&quot;sequence&quot;:&quot;)(&quot;,&quot;valid&quot;:&quot;no&quot;}
+]
+期望返回：
+[
+ {&quot;input&quot;:&quot;序列：()(())&quot;,&quot;output&quot;:&quot;[Valid]: YES&quot;},
+ {&quot;input&quot;:&quot;序列：)(&quot;,&quot;output&quot;:&quot;[Valid]: NO&quot;}
+]
+</code></pre></div>
+<p>状态推演如下。所谓"状态推演"，就是把函数当成一台机器，输入一条、看一次状态变化，最后核对输出。</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>取到的记录</th>
+<th>函数内部发生了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>{"sequence":"( )(())","valid":" yes "}</code></td>
+<td>是字典 → 两个字段都是字符串 → 删空白得到 <code>cleaned = "()(())"</code>（长度 6，只含括号，格式合格）→ 标签去空白转大写得到 <code>"YES"</code>，在允许清单里 → 拼出 <code>input = "序列：()(())"</code>、<code>output = "[Valid]: YES"</code> → <code>kept</code> 里没有这个键，存入</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>{"sequence":")(","valid":"no"}</code></td>
+<td>是字典 → 两个字段都是字符串 → 无空白可删，<code>cleaned = ")("</code>（长度 2，格式合格，注意<strong>不判断合法性</strong>）→ 标签转大写得 <code>"NO"</code> → 拼出 <code>input = "序列：)("</code>、<code>output = "[Valid]: NO"</code> → 新键，存入</td>
+</tr>
+<tr>
+<td>3</td>
+<td>没有更多记录</td>
+<td>返回 <code>list(kept.values())</code>，正好是期望的两条</td>
+</tr>
+</tbody>
+</table>
+<p>核对：返回两条，顺序与输入一致，键名是 <code>input</code> 和 <code>output</code>，值是期望的字符串。P01 通过。</p>
+<div class="admonition question">
+<p class="admonition-title">考试怎么考</p>
+<p>P01 表面上在考"删空白"和"标签大小写"，实际还藏了一个考点：第 2 条 )( 会被保留。如果谁把"合法性判断"偷偷写进函数，这条就会被当成不合法而删掉，期望的两条变成一条，P01 直接错。这就是规则 5 的现场版。</p>
+</div>
+<h2 id="204-p02">20.4　完整推演公开点 P02<a class="headerlink" href="#204-p02" title="Permanent link">&para;</a></h2>
+<p>P02 的输入与期望：</p>
+<div class="highlight"><pre><span></span><code>records：
+[
+ null,
+ {&quot;sequence&quot;:&quot; &quot;,&quot;valid&quot;:&quot;NO&quot;},
+ {&quot;sequence&quot;:&quot; ( ( ) ) &quot;,&quot;valid&quot;:&quot;yes&quot;},
+ {&quot;sequence&quot;:&quot;(())&quot;,&quot;valid&quot;:&quot;YES&quot;},
+ {&quot;sequence&quot;:&quot;(a)&quot;,&quot;valid&quot;:&quot;NO&quot;},
+ {&quot;sequence&quot;:&quot;()&quot;,&quot;valid&quot;:&quot;MAYBE&quot;}
+]
+期望返回：
+[
+ {&quot;input&quot;:&quot;序列：(())&quot;,&quot;output&quot;:&quot;[Valid]: YES&quot;}
+]
+</code></pre></div>
+<p>P02 是六个"陷阱"排成一列，逐个过一遍你就明白评分者想考什么了。</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>记录</th>
+<th>判断过程</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>null</code>（Python 里是 <code>None</code>）</td>
+<td><code>isinstance(None, dict)</code> 为假</td>
+<td>跳过</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>{"sequence":" ","valid":"NO"}</code></td>
+<td>是字典、字段都是字符串；删空白后 <code>cleaned = ""</code>，长度 0，正则不匹配（要求 2～12）</td>
+<td>跳过</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>{"sequence":" ( ( ) ) ","valid":"yes"}</code></td>
+<td>删空白后 <code>cleaned = "(())"</code>，长度 4 合格；标签 <code>"yes"</code> → <code>"YES"</code> 合格；拼出 <code>"序列：(())"</code> 与 <code>"[Valid]: YES"</code></td>
+<td><strong>保留</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>{"sequence":"(())","valid":"YES"}</code></td>
+<td>格式化后 <code>input</code> 与第 3 步完全相同，且 <code>output</code> 也相同</td>
+<td>作为重复跳过</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>{"sequence":"(a)","valid":"NO"}</code></td>
+<td>删空白后仍是 <code>"(a)"</code>，含字母 <code>a</code>，正则不匹配</td>
+<td>跳过</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>{"sequence":"()","valid":"MAYBE"}</code></td>
+<td>格式合格，但标签转大写后是 <code>"MAYBE"</code>，不在允许清单里</td>
+<td>跳过</td>
+</tr>
+</tbody>
+</table>
+<p>最终 <code>kept</code> 里只有第 3 步那一条，返回长度为 1 的列表，与期望完全一致。</p>
+<div class="admonition warning">
+<p class="admonition-title">坑</p>
+<p>P02 的两个高频失分点：一是 null 没判断类型，函数直接崩溃；二是没有按规范化后的 input 去重，第 3、4 步各留一条，返回两条。还有一个小陷阱容易被忽略：第 2 步的 " " 必须被删成空串才判不合格；如果你写成"跳过显然不长于 2 的输入"却不删空白，" ( ( ) ) " 的原始长度 9 就蒙混过关、" " 也可能被不同方式处理，最终结果都会偏。</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">技巧</p>
+<p>看这两个公开点的设计，就能反推评分者的口味：他们专门测"边界与脏数据"，而不是测"会不会写循环"。你自己造数据时也该用同样刁的胃口去挑反例。</p>
+</div>
+<h2 id="205">20.5　自测脚本：把两个公开点写成断言<a class="headerlink" href="#205" title="Permanent link">&para;</a></h2>
+<p>把公开点抄成断言，是最省事、最可靠的回归测试。<code>assert</code> 的意思是"我断言这个条件为真，否则就报错"。</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># test_process_data.py —— 只在本机跑，不要提交</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">submission</span><span class="w"> </span><span class="kn">import</span> <span class="n">process_data</span>
+
+<span class="n">P01_IN</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;sequence&quot;</span><span class="p">:</span> <span class="s2">&quot;( )(())&quot;</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="s2">&quot; yes &quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;sequence&quot;</span><span class="p">:</span> <span class="s2">&quot;)(&quot;</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="s2">&quot;no&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+<span class="n">P01_OUT</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;序列：()(())&quot;</span><span class="p">,</span> <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="s2">&quot;[Valid]: YES&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;序列：)(&quot;</span><span class="p">,</span> <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="s2">&quot;[Valid]: NO&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+<span class="k">assert</span> <span class="n">process_data</span><span class="p">(</span><span class="n">P01_IN</span><span class="p">)</span> <span class="o">==</span> <span class="n">P01_OUT</span><span class="p">,</span> <span class="s2">&quot;P01 不通过&quot;</span>
+
+<span class="n">P02_IN</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="kc">None</span><span class="p">,</span>
+    <span class="p">{</span><span class="s2">&quot;sequence&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="s2">&quot;NO&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;sequence&quot;</span><span class="p">:</span> <span class="s2">&quot; ( ( ) ) &quot;</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="s2">&quot;yes&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;sequence&quot;</span><span class="p">:</span> <span class="s2">&quot;(())&quot;</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="s2">&quot;YES&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;sequence&quot;</span><span class="p">:</span> <span class="s2">&quot;(a)&quot;</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="s2">&quot;NO&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;sequence&quot;</span><span class="p">:</span> <span class="s2">&quot;()&quot;</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="s2">&quot;MAYBE&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+<span class="n">P02_OUT</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;input&quot;</span><span class="p">:</span> <span class="s2">&quot;序列：(())&quot;</span><span class="p">,</span> <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="s2">&quot;[Valid]: YES&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+<span class="k">assert</span> <span class="n">process_data</span><span class="p">(</span><span class="n">P02_IN</span><span class="p">)</span> <span class="o">==</span> <span class="n">P02_OUT</span><span class="p">,</span> <span class="s2">&quot;P02 不通过&quot;</span>
+
+<span class="c1"># 额外自测：不是列表必须抛 ValueError</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">process_data</span><span class="p">(</span><span class="s2">&quot;这不是列表&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+    <span class="k">pass</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;records 不是列表时应当抛 ValueError&quot;</span><span class="p">)</span>
+
+<span class="c1"># 额外自测：同一个 input 出现不同 output 必须抛 ValueError</span>
+<span class="n">CONFLICT</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;sequence&quot;</span><span class="p">:</span> <span class="s2">&quot;(())&quot;</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="s2">&quot;YES&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;sequence&quot;</span><span class="p">:</span> <span class="s2">&quot; ( ( ) ) &quot;</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="s2">&quot;NO&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">process_data</span><span class="p">(</span><span class="n">CONFLICT</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+    <span class="k">pass</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;同一 input 冲突时应当抛 ValueError&quot;</span><span class="p">)</span>
+
+<span class="c1"># 额外自测：空列表返回空列表，长度边界 2 和 12 都能保留</span>
+<span class="k">assert</span> <span class="n">process_data</span><span class="p">([])</span> <span class="o">==</span> <span class="p">[]</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">process_data</span><span class="p">([{</span><span class="s2">&quot;sequence&quot;</span><span class="p">:</span> <span class="s2">&quot;()&quot;</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="s2">&quot;NO&quot;</span><span class="p">}]))</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">process_data</span><span class="p">([{</span><span class="s2">&quot;sequence&quot;</span><span class="p">:</span> <span class="s2">&quot;()&quot;</span> <span class="o">*</span> <span class="mi">6</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="s2">&quot;YES&quot;</span><span class="p">}]))</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="k">assert</span> <span class="n">process_data</span><span class="p">([{</span><span class="s2">&quot;sequence&quot;</span><span class="p">:</span> <span class="s2">&quot;()&quot;</span> <span class="o">*</span> <span class="mi">7</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span> <span class="s2">&quot;YES&quot;</span><span class="p">}])</span> <span class="o">==</span> <span class="p">[]</span>   <span class="c1"># 长度 14，应被清洗掉</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;全部自测通过&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>最后三行断言测的是长度边界：<code>"()" * 6</code> 是长度 12（上边界，应保留），<code>"()" * 7</code> 是长度 14（超限，应被清洗掉）。这类边界自己加几条，能提前发现"范围写成了 2～13"之类的低级错误。</p>
+<div class="admonition question">
+<p class="admonition-title">考试怎么考</p>
+<p>平台展示的两个函数点就是 P01 和 P02，测试时完整展示输入、期望返回值、实际返回值和对错。也就是说，函数环节你不需要猜——把这两段断言跑通，20 分就到手了。剩下要防的是"本地通过、平台不通过"，常见原因就是环境差异（比如用了没被允许的库）或者细节没对齐（比如返回了字典而不是列表）。</p>
+</div>
+<h2 id="206">20.6　常见失分点表<a class="headerlink" href="#206" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>失分点</th>
+<th>错误写法</th>
+<th>正确做法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>函数里判断合法性</td>
+<td>数括号、用栈判合法，把 NO 的记录删掉或改标签</td>
+<td>只做字符和长度检查；<code>)()(</code>、<code>((((</code> 都要原样保留</td>
+</tr>
+<tr>
+<td>没做类型检查</td>
+<td>直接 <code>record["sequence"]</code>，遇到 <code>null</code> 崩溃</td>
+<td>先 <code>isinstance(record, dict)</code>，再 <code>get</code>，再 <code>isinstance(..., str)</code></td>
+</tr>
+<tr>
+<td>只删两端空白</td>
+<td><code>sequence.strip()</code></td>
+<td><code>re.sub(r"\s+", "", sequence)</code>，删全部空白</td>
+</tr>
+<tr>
+<td>长度范围写错</td>
+<td>写成 <code>1 &lt;= n &lt;= 12</code> 或 <code>2 &lt; n &lt;= 12</code></td>
+<td>闭区间 2～12；用 <code>^[()]{2,12}$</code> 同时管字符</td>
+</tr>
+<tr>
+<td>标签没归一化</td>
+<td>直接比较 <code>"yes"</code>，或忘了 <code>upper()</code></td>
+<td><code>valid.strip().upper()</code>，再查是否在 <code>("YES","NO")</code> 里</td>
+</tr>
+<tr>
+<td>去重方式不稳定</td>
+<td>用 <code>set</code> 或先排序</td>
+<td>用 <code>OrderedDict</code> 或保序字典，保留首次出现</td>
+</tr>
+<tr>
+<td>按原始串去重</td>
+<td>用 <code>sequence</code> 当键</td>
+<td>用规范化后的 <code>input</code> 当键</td>
+</tr>
+<tr>
+<td>冲突不报错</td>
+<td>同 input 不同 output 时随便留一个</td>
+<td><code>raise ValueError</code></td>
+</tr>
+<tr>
+<td>返回类型错</td>
+<td>返回字典、返回元组、只打印不返回</td>
+<td><code>return list(kept.values())</code></td>
+</tr>
+<tr>
+<td>残留调试代码</td>
+<td>忘了删的 <code>print</code>、注释掉的实验代码</td>
+<td>提交前搜一遍 <code>print</code></td>
+</tr>
+<tr>
+<td>用了禁用库</td>
+<td><code>import os</code>、<code>import sys</code>、第三方包</td>
+<td>只用 json / re / collections</td>
+</tr>
+<tr>
+<td>前缀字符写错</td>
+<td>半角冒号的 <code>序列:</code>、少空格的 <code>[Valid]:YES</code></td>
+<td>常量写在函数内，逐字符核对：<code>"序列："</code>、<code>"[Valid]: "</code></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition success">
+<p class="admonition-title">本章要记住的 6 件事</p>
+<ul>
+<li>参考实现只有三十行左右：类型检查 → 取字段 → 删空白 → 校验格式 → 归一化标签 → 拼接 → 稳定去重 → 返回列表。</li>
+<li>两个公开点 P01、P02 的期望值要能背下来，最好直接写成断言跑通。</li>
+<li>P01 的关键是"删中间空白，并且 <code>)(</code> 这类不合法的串也必须原样保留"（函数不判合法性）。</li>
+<li>P02 的关键是"<code>null</code> 跳过 + 空串跳过 + 按规范化 input 去重 + 非法标签跳过"。</li>
+<li>额外自测要覆盖：不是列表抛错、冲突抛错、空列表、长度 2 与 12 的边界、长度 14 被清洗。</li>
+<li>提交前检查：没有 <code>print</code>、没有禁用库、返回的是列表、常量都在函数里。</li>
+</ul>
+</div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.indexes", "content.code.copy", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

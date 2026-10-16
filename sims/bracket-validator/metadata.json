@@ -1,0 +1,58 @@
+{
+ "dublinCore": {
+  "title": "括号序列合法性判定",
+  "creator": "LMCC 复习手册",
+  "subject": "括号序列前缀条件与结束条件",
+  "description": "输入括号串，逐步显示余额变化并判定是否合法",
+  "date": "2026",
+  "type": "InteractiveResource",
+  "format": "text/html",
+  "rights": "仅供学习使用"
+ },
+ "search": {
+  "tags": [
+   "bracket",
+   "stack",
+   "validity"
+  ],
+  "visualizationType": "interactive-checker",
+  "keywords": [
+   "括号序列",
+   "前缀条件",
+   "合法性"
+  ]
+ },
+ "educational": {
+  "gradeLevel": "初一及以上",
+  "subjectArea": "计算机科学",
+  "topic": "括号序列判定",
+  "learningObjectives": [
+   "说出合法括号序列的两个条件",
+   "识别未闭合、额外右括号、顺序错误三类不合法"
+  ],
+  "bloomLevels": [
+   "Understand",
+   "Apply",
+   "Analyze"
+  ]
+ },
+ "technical": {
+  "framework": "vanilla-js",
+  "canvasDimensions": "responsive",
+  "dependencies": [],
+  "accessibility": "键盘可输入，颜色+文字双通道"
+ },
+ "userInterface": {
+  "controls": [
+   "文本输入",
+   "随机生成",
+   "清空",
+   "公开测试点按钮"
+  ],
+  "visualElements": [
+   "逐步余额卡片",
+   "结论条"
+  ],
+  "layoutPattern": "单列"
+ }
+}

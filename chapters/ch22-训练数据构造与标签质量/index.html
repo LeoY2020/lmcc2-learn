@@ -1,0 +1,3221 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="2026 LMCC 第二轮三题（Prompt 调优 / LoRA 数据 / Vibe Coding）复习手册">
+      
+      
+      
+      
+        <link rel="prev" href="../ch21-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E4%B8%8E%E8%AE%AD%E7%BB%83%E6%B5%81%E7%A8%8B/">
+      
+      
+        <link rel="next" href="../ch23-%E5%8F%82%E6%95%B0%E9%AB%98%E6%95%88%E5%BE%AE%E8%B0%83-lora-%E4%B8%8E%E8%AE%AD%E7%BB%83%E5%8F%82%E6%95%B0/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>第 22 章 训练数据构造与标签质量 - LMCC 第二轮通关手册</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#22" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="LMCC 第二轮通关手册" class="md-header__button md-logo" aria-label="LMCC 第二轮通关手册" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LMCC 第二轮通关手册
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              第 22 章 训练数据构造与标签质量
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="切换到深色"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="切换到深色" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="切换到浅色"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="切换到浅色" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="LMCC 第二轮通关手册" class="md-nav__button md-logo" aria-label="LMCC 第二轮通关手册" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LMCC 第二轮通关手册
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../course-description/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    课程说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch01-%E8%80%83%E8%AF%95%E5%BD%A2%E5%BC%8F%E4%B8%8E%E8%AF%84%E5%88%86%E6%9C%BA%E5%88%B6/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第一部分考试与工具
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第一部分考试与工具
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch02-%E4%B8%8A%E6%9C%BA%E7%8E%AF%E5%A2%83%E4%B8%8E%E5%B7%A5%E5%85%B7%E9%93%BE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 2 章 上机环境与工具链
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch03-%E4%BD%9C%E7%AD%94%E7%BA%AA%E5%BE%8B%E4%B8%8E%E4%BA%A4%E4%BB%98%E8%A6%81%E6%B1%82/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 3 章 作答纪律与交付要求
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch04-python-%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第二部分Python 程序设计
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第二部分Python 程序设计
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch05-%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%8E%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 5 章 字符串与文本处理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch06-%E5%88%97%E8%A1%A8-%E5%85%83%E7%BB%84-%E9%9B%86%E5%90%88-%E5%AD%97%E5%85%B8%E4%B8%8E%E6%8E%A8%E5%AF%BC%E5%BC%8F/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 6 章 列表、元组、集合、字典与推导式
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch07-%E6%8E%A7%E5%88%B6%E6%B5%81%E4%B8%8E%E5%87%BD%E6%95%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 7 章 控制流与函数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch08-%E6%A8%A1%E5%9D%97-%E6%96%87%E4%BB%B6%E4%B8%8E-json/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 8 章 模块、文件与 JSON
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch09-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E4%B8%8E%E7%A8%8B%E5%BA%8F%E8%B0%83%E8%AF%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 9 章 正则表达式与程序调试
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch10-%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第三部分大语言模型与提示词工程
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第三部分大语言模型与提示词工程
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch11-%E5%AF%B9%E8%AF%9D%E7%BB%93%E6%9E%84-%E6%A8%A1%E6%9D%BF%E4%B8%8E%E6%8E%A8%E7%90%86%E6%A8%A1%E5%BC%8F/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 11 章 对话结构、模板与推理模式
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch12-%E6%8F%90%E7%A4%BA%E8%AF%8D%E7%9A%84%E7%BB%93%E6%9E%84%E4%B8%8E%E5%86%99%E6%B3%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 12 章 提示词的结构与写法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch13-%E4%BB%BB%E5%8A%A1%E8%A7%84%E5%88%99%E7%9A%84%E8%A7%A3%E6%9E%90%E4%B8%8E%E8%A1%A8%E8%BE%BE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 13 章 任务规则的解析与表达
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch14-%E8%BE%93%E5%87%BA%E6%A0%BC%E5%BC%8F%E7%BA%A6%E6%9D%9F/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 14 章 输出格式约束
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch15-%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%E4%B8%8E%E8%BE%B9%E7%95%8C%E6%9D%A1%E4%BB%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 15 章 提示词注入与边界条件
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch16-%E6%8F%90%E7%A4%BA%E8%AF%8D%E8%BF%AD%E4%BB%A3%E4%B8%8E%E9%A2%84%E7%AE%97%E7%AE%A1%E7%90%86/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 16 章 提示词迭代与预算管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch17-%E4%BB%8E%E8%A7%84%E6%A0%BC%E5%88%B0%E7%A8%8B%E5%BA%8F%E9%80%BB%E8%BE%91/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第四部分数据清洗与函数实现
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第四部分数据清洗与函数实现
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch18-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%A0%A1%E9%AA%8C%E4%B8%8E%E5%AE%89%E5%85%A8%E5%8F%96%E5%80%BC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 18 章 数据类型校验与安全取值
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch19-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%B8%85%E6%B4%97%E4%B8%8E%E8%A7%84%E8%8C%83%E5%8C%96/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 19 章 字符串清洗与规范化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch20-%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97%E5%87%BD%E6%95%B0%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%8E%E6%B5%8B%E8%AF%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 20 章 数据清洗函数的实现与测试
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch21-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E4%B8%8E%E8%AE%AD%E7%BB%83%E6%B5%81%E7%A8%8B/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第五部分机器学习与参数高效微调
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第五部分机器学习与参数高效微调
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 22 章 训练数据构造与标签质量
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 22 章 训练数据构造与标签质量
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#221-100-lora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        22.1 为什么 100 条就够：LoRA 在学什么
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="22.1 为什么 100 条就够：LoRA 在学什么">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        先认识三个词
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#100" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么 100 条够
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#512-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        每条数据为什么有 512 Token 的上限
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        顺便认识"过拟合"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#222-24681012-vs-vs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        22.2 覆盖矩阵：长度 2/4/6/8/10/12、连续 vs 嵌套、合法 vs 不合法
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="22.2 覆盖矩阵：长度 2/4/6/8/10/12、连续 vs 嵌套、合法 vs 不合法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        每种结构至少要几条
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#223" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        22.3 必须覆盖的不合法类型（含会给清洗掉的边界）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#224" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        22.4 标签可靠性：不要出现错标，不要只靠"左右数量相等"
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="22.4 标签可靠性：不要出现错标，不要只靠&#34;左右数量相等&#34;">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        一个可靠的打标签方法
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        要小心的几个"看起来像对的"标签
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#225-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        22.5 禁止把 4 个公开模型测试点的输入放进训练集
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#226" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        22.6 生成脚本示例与抽检方法
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch23-%E5%8F%82%E6%95%B0%E9%AB%98%E6%95%88%E5%BE%AE%E8%B0%83-lora-%E4%B8%8E%E8%AE%AD%E7%BB%83%E5%8F%82%E6%95%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 23 章 参数高效微调（LoRA）与训练参数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch24-%E6%A8%A1%E5%9E%8B-%E5%88%86%E8%AF%8D%E5%99%A8%E4%B8%8E%E6%8E%A8%E7%90%86%E6%B5%81%E7%A8%8B/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第六部分模型、推理与语义检索
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第六部分模型、推理与语义检索
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch25-%E5%88%86%E8%AF%8D%E5%99%A8%E4%B8%8E%E5%BA%8F%E5%88%97%E5%A4%84%E7%90%86/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 25 章 分词器与序列处理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch26-%E5%AF%B9%E8%AF%9D%E6%A8%A1%E6%9D%BF%E7%9A%84%E5%AE%9E%E7%8E%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 26 章 对话模板的实现
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch27-%E7%94%9F%E6%88%90%E5%8F%82%E6%95%B0%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 27 章 生成参数的实现细节
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch28-%E6%96%87%E6%9C%AC%E5%90%91%E9%87%8F%E4%B8%8E%E8%AF%AD%E4%B9%89%E7%9B%B8%E4%BC%BC%E5%BA%A6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 28 章 文本向量与语义相似度
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch29-%E4%B8%8E%E7%BC%96%E7%A8%8B-agent-%E5%8D%8F%E4%BD%9C%E7%9A%84%E6%96%B9%E6%B3%95/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第七部分工程实践与人机协作
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第七部分工程实践与人机协作
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch30-token-%E9%A2%84%E7%AE%97%E4%B8%8E%E5%B7%A5%E7%A8%8B%E6%88%90%E6%9C%AC%E7%AE%A1%E7%90%86/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 30 章 Token 预算与工程成本管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch31-%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6%E4%B8%8E%E5%AE%9E%E9%AA%8C%E8%AE%B0%E5%BD%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 31 章 版本控制与实验记录
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch32-%E6%A1%88%E4%BE%8B%E4%B8%80-%E6%8B%AC%E5%8F%B7%E5%BA%8F%E5%88%97%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第八部分应用案例与应试
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第八部分应用案例与应试
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch33-%E6%A1%88%E4%BE%8B%E4%BA%8C-todomvc-%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 33 章 案例二：TodoMVC 功能实现
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch34-%E5%A4%87%E8%80%83%E8%AE%A1%E5%88%92%E4%B8%8E%E8%80%83%E5%9C%BA%E7%AD%96%E7%95%A5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 34 章 备考计划与考场策略
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch35-%E6%A8%A1%E6%9D%BF%E5%BA%93/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 35 章 模板库
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch36-%E7%BB%BC%E5%90%88%E7%BB%83%E4%B9%A0-%E5%90%AB%E7%AD%94%E6%A1%88/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 36 章 综合练习（含答案）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch37-%E9%80%9F%E6%9F%A5%E8%A1%A8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 37 章 速查表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../apA-%E9%99%84%E5%BD%95-a-2026-%E4%B8%89%E9%A2%98%E8%A7%84%E6%A0%BC%E9%80%9F%E6%9F%A5/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录规格速查与术语手册
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    附录规格速查与术语手册
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../apB-%E9%99%84%E5%BD%95-b-%E6%9C%AF%E8%AF%AD%E8%A1%A8%E4%B8%8E%E6%8A%A5%E9%94%99%E5%AF%B9%E7%85%A7%E8%A1%A8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录 B 术语表与报错对照表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../learning-graph/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    学习图谱
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_12" id="__nav_12_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    学习图谱
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learning-graph/list-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概念清单
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learning-graph/quality-metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    质量指标
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learning-graph/taxonomy-distribution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分类分布
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    术语表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quiz/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    自测练习
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    常见问题
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../sims/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    交互模拟
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_16" id="__nav_16_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    交互模拟
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sims/bracket-validator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    括号序列判定
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sims/token-budget/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Token 预算计算器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    关于本书
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    资料来源
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#221-100-lora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        22.1 为什么 100 条就够：LoRA 在学什么
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="22.1 为什么 100 条就够：LoRA 在学什么">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        先认识三个词
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#100" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么 100 条够
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#512-token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        每条数据为什么有 512 Token 的上限
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        顺便认识"过拟合"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#222-24681012-vs-vs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        22.2 覆盖矩阵：长度 2/4/6/8/10/12、连续 vs 嵌套、合法 vs 不合法
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="22.2 覆盖矩阵：长度 2/4/6/8/10/12、连续 vs 嵌套、合法 vs 不合法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        每种结构至少要几条
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#223" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        22.3 必须覆盖的不合法类型（含会给清洗掉的边界）
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#224" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        22.4 标签可靠性：不要出现错标，不要只靠"左右数量相等"
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="22.4 标签可靠性：不要出现错标，不要只靠&#34;左右数量相等&#34;">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        一个可靠的打标签方法
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        要小心的几个"看起来像对的"标签
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#225-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        22.5 禁止把 4 个公开模型测试点的输入放进训练集
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#226" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        22.6 生成脚本示例与抽检方法
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="22">第 22 章 训练数据构造与标签质量<a class="headerlink" href="#22" title="Permanent link">&para;</a></h1>
+<div class="admonition info">
+<p class="admonition-title">本章目标</p>
+<p>读完这一章，你能：说清 LoRA 到底在学什么、为什么 100 条就够用；画出一张长度 × 结构的覆盖矩阵；按四类不合法情况补齐数据；保证每条标签都可靠；并且知道哪些输入绝对不能放进训练集。</p>
+</div>
+<p>这一章是第二题最重要的一章。参数填错，最多损失几分；数据造偏，40 分隐藏点会成片地丢。先把一个关键问题讲明白：模型到底是怎么"学会"的？</p>
+<h2 id="221-100-lora">22.1　为什么 100 条就够：LoRA 在学什么<a class="headerlink" href="#221-100-lora" title="Permanent link">&para;</a></h2>
+<h3 id="_1">先认识三个词<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<p><strong>模型（model）</strong>：这里用的是 Qwen3-0.6B，可以理解成一台"读了很多文本、学会了接话"的机器。它内部有大约六亿个数字（叫参数），这些数字决定了它对任何输入的回应。0.6B 里的 B 是"十亿"，所以它是个很小的模型——小到可以在普通显卡上跑，也小到"很好带"。</p>
+<p><strong>微调（fine-tuning）</strong>：直接改这台机器的全部参数，让它适应一个新任务。问题是很贵：要很多显存、很多时间。</p>
+<p><strong>LoRA（低秩适配，Low-Rank Adaptation）</strong>：一种省钱的微调办法。它<strong>不动原来的六亿个参数</strong>，而是在模型的一些层旁边"挂"上几个很小的矩阵（你可以想象成给机器贴的便利贴），训练时只改这些便利贴。训练完，把便利贴的内容单独保存成一个很小的文件，加载时再贴回去。这样 8GiB 显存就够用了，保存和重载也很快。</p>
+<div class="admonition info">
+<p class="admonition-title">必背</p>
+<p>LoRA 不是"重新训练一个模型"，而是"给现成模型加一层小的、可训练的补丁"。参数 loraRank（秩）就是决定这张便利贴有多大的旋钮：4 最小、16 最大。</p>
+</div>
+<p>那么这台机器靠什么学会"判断括号序列合法"？它靠的是<strong>模仿</strong>。你给它看成百上千次"这个输入对应这个答案"，它就去调整便利贴上的数字，让"看到这种输入就吐出这种答案"的概率变高。它没有"理解"括号配对这件事，它只是把输入的形状和你给的标签之间的<strong>统计关联</strong>记下来。</p>
+<h3 id="100">为什么 100 条够<a class="headerlink" href="#100" title="Permanent link">&para;</a></h3>
+<p>因为这道题要学的规律非常"薄"。整道题的规律只有两条（前缀条件、结束条件），输出只有两个固定字符串。机器不需要学会写作文、算数学，只需要学会"识别括号串的形状 → 输出两种固定串之一"。这种任务叫<strong>模式识别</strong>，样本效率极高。100 条数据，每条平均十几个字符，乘以系统提示词和对话模板，总训练量已经足够让模型把输出格式稳定下来。</p>
+<p>但"100 条够"有个前提：<strong>这 100 条必须把规律的关键维度都覆盖到</strong>。如果 100 条里 90 条是 <code>()()()</code> 这种连续结构，剩下 10 条是明显乱写的，模型学到的就是"看起来规整 = YES"，在隐藏点上照样会错。反过来，100 条安排得当，比盲目堆 1000 条更有效——何况题面本来就不许超过 100 条。</p>
+<h3 id="512-token">每条数据为什么有 512 Token 的上限<a class="headerlink" href="#512-token" title="Permanent link">&para;</a></h3>
+<p>平台给每条训练数据留了 512 Token 的额度，里面要装下"固定系统提示词 + 对话格式标记 + 你的输入 + 正确答案"。固定系统提示词本身就有几十个 Token，对话格式的标记也要占一些，剩下的额度对你的括号串来说绰绰有余。这条限制真正防的是"把一整篇文章塞进 <code>sequence</code>"这类失控行为。反过来想：<strong>额度这么宽松，说明成绩根本不取决于你把数据写多长，而取决于你写得多准。</strong>与其在一条数据里塞更多字，不如多造几条覆盖不同结构的短数据。</p>
+<p>再强调一次 Token 和汉字的关系：对中文来说，大约一个字对应一个 Token，标点和英文单词也各占若干。所以你不需要精确计算，只要保证 <code>valid</code> 里除了 YES/NO 什么都不写、<code>sequence</code> 里只有 2 至 12 个括号，就永远不会踩到这条线。</p>
+<h3 id="_2">顺便认识"过拟合"<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p><strong>过拟合（overfitting）</strong>：模型把你的训练数据<strong>背下来了</strong>，而不是学到规律。表现的典型症状是：训练集上几乎全对，一换没见过的输入就错。在本题里，过拟合最常见的形态就是——你的数据里所有"数量相等"的串都是 YES，模型于是学会"数一数，相等就 YES"，在 <code>)()(</code> 这类平衡但顺序错的串上全军覆没。</p>
+<div class="admonition warning">
+<p class="admonition-title">坑</p>
+<p>把训练轮数（epochs）从 8 加到 12，并不能治好"规律学错了"这个病，只会让模型把错误规律背得更牢。增加训练轮数不保证成绩提高，题面原话。数据覆盖不对时，调参数是白费力气；先回去检查数据。</p>
+</div>
+<h2 id="222-24681012-vs-vs">22.2　覆盖矩阵：长度 2/4/6/8/10/12、连续 vs 嵌套、合法 vs 不合法<a class="headerlink" href="#222-24681012-vs-vs" title="Permanent link">&para;</a></h2>
+<p>构造数据最怕"凭感觉随机生成"。用 CSP-J 的思路：先列一张<strong>测试矩阵</strong>，横轴是长度，纵轴是结构类型，然后逐格填例子。填满之后你就会得到一个几乎没有盲区的数据集。</p>
+<p>长度为什么只放偶数？因为奇数的合法序列根本不存在，但奇数长度本身是一种"不合法原因"，所以奇数长度要放在<strong>不合法</strong>那一侧当反例，而不是当合法的目标。下面的矩阵把长度 2/4/6/8/10/12 作为主骨架（都是合法的目标长度），另外单独配奇数长度的反例。</p>
+<table>
+<thead>
+<tr>
+<th>长度</th>
+<th>连续型合法</th>
+<th>嵌套型合法</th>
+<th>混合/其他结构合法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td><code>()</code></td>
+<td>—（就是 <code>()</code>）</td>
+<td>—</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>()()</code></td>
+<td><code>(())</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>()()()</code></td>
+<td><code>((()))</code></td>
+<td><code>(()())</code>、<code>(())()</code>、<code>()(())</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>()()()()</code></td>
+<td><code>(((())))</code></td>
+<td><code>(())(())</code>、<code>((())())</code>、<code>(()(()))</code>、<code>()((()))</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>()()()()()</code></td>
+<td><code>((((()))))</code></td>
+<td><code>(()())(())</code>、<code>((())(()))</code>、<code>(())()(())</code></td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>()()()()()()</code></td>
+<td><code>(((((())))))</code></td>
+<td><code>((()())(()))</code>、<code>(())(())()()</code>、<code>(((()))(()))</code></td>
+</tr>
+</tbody>
+</table>
+<p>同一张矩阵，不合法一侧按"错在哪"来填，而不是按长度。这样你才能保证四类错误都有代表，并且同一类错误出现在不同长度上。</p>
+<table>
+<thead>
+<tr>
+<th>不合法类型</th>
+<th>低长度例子</th>
+<th>中等长度例子</th>
+<th>高长度例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>未闭合</td>
+<td><code>((</code></td>
+<td><code>(()(</code>、<code>((()</code></td>
+<td><code>(()()(()</code>、<code>((((((</code></td>
+</tr>
+<tr>
+<td>额外右括号</td>
+<td><code>))</code>、<code>())</code></td>
+<td><code>())))</code>、<code>())(</code></td>
+<td><code>())()))))(</code>、<code>((())))))</code></td>
+</tr>
+<tr>
+<td>数量相等但顺序错</td>
+<td><code>)(</code></td>
+<td><code>)()(</code>、<code>())()(</code>、<code>())(()</code></td>
+<td><code>)()()(()()(</code>、<code>(()))(())(</code></td>
+</tr>
+<tr>
+<td>奇数长度</td>
+<td><code>()(</code>（长 3）</td>
+<td><code>())</code>（长 3）、<code>((())</code>（长 5）</td>
+<td><code>()()()()()</code> 少一位变成 <code>()()()()(</code>（长 9）</td>
+</tr>
+</tbody>
+</table>
+<p>为什么长度这个维度必须单独列出来？因为模型的"经验"高度依赖它见过什么。如果训练数据全是长度 2 到 4 的小串，模型很可能把"短串"和"合法"关联起来；一旦遇到长度 10 的隐藏点，它的直觉就可能出错。反过来，如果 2、4、6、8、10、12 每个长度都见过合法的连续型、嵌套型和混合型，模型学到的就是"不管多长，只要满足那两条规则就 YES"，这才是能迁移到新输入上的规律。</p>
+<div class="admonition tip">
+<p class="admonition-title">技巧</p>
+<p>别手工敲这几十条，容易敲错。写一个小脚本把某个长度下的所有括号串枚举出来，再用一个独立的检查函数打标签，最后按"连续、嵌套、四类不合法"分组各取样若干条。脚本生成的串不会打错字符，标签也不会手滑。具体脚本见 20.6 节。</p>
+</div>
+<h3 id="_3">每种结构至少要几条<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>"覆盖"不等于"每格一条就完事"。模型要从多个例子里归纳出规律，同一个类型给三五条不同长相，它才敢确认这是规律而不是巧合。一个可执行的分配建议（总数控制在 100 条以内）：</p>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>建议条数</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>连续型合法（各种长度）</td>
+<td>15～20</td>
+<td>提供最基础的正例，覆盖长度维度</td>
+</tr>
+<tr>
+<td>嵌套型合法</td>
+<td>15～20</td>
+<td>嵌套和连续形状差别大，要都见过</td>
+</tr>
+<tr>
+<td>混合结构合法</td>
+<td>20～25</td>
+<td>真实隐藏点多半长这样，让模型不靠"形状规整"蒙</td>
+</tr>
+<tr>
+<td>未闭合</td>
+<td>10～15</td>
+<td>训练结束条件</td>
+</tr>
+<tr>
+<td>额外右括号</td>
+<td>10～15</td>
+<td>训练过程条件（提前变负）</td>
+</tr>
+<tr>
+<td>数量相等但顺序错</td>
+<td>15～20</td>
+<td><strong>最重要的一类</strong>，专门打掉"数量相等就是合法"的捷径</td>
+</tr>
+<tr>
+<td>奇数长度</td>
+<td>5～10</td>
+<td>反例，同时让模型见过奇长度也应是 NO</td>
+</tr>
+</tbody>
+</table>
+<h2 id="223">22.3　必须覆盖的不合法类型（含会给清洗掉的边界）<a class="headerlink" href="#223" title="Permanent link">&para;</a></h2>
+<p>把 18.2 的不合法部分再钉一遍。下面这张表是"最低清单"：每一项都至少要有几条，缺一项都可能对应一个隐藏点丢分。</p>
+<ul>
+<li>
+<p><strong>未闭合</strong>：左括号开得比关得多。短到 <code>((</code>，长到 <code>((((((</code>；也要有"看起来就差一步"的 <code>(()</code> 和 <code>(()(()</code>。这类数据教会模型看<strong>结束条件</strong>。</p>
+</li>
+<li>
+<p><strong>额外右括号</strong>：某个前缀里右括号超了。<code>))</code>、<code>())</code>、<code>())))</code>。这类数据教会模型看<strong>过程条件</strong>。</p>
+</li>
+<li>
+<p><strong>数量相等但顺序错</strong>：<code>)(</code>、<code>)()(</code>、<code>())(()</code>、<code>())()(</code>、<code>)((())()()</code>。这类数据是拆掉"数数量"捷径的<strong>唯一武器</strong>。</p>
+</li>
+<li>
+<p><strong>奇数长度</strong>：<code>()(</code>、<code>())</code>、<code>((())</code>、<code>()()()()(</code>。长度是奇数时结束条件不可能满足，模型一旦学会"奇长度 → NO"，就能省下不少力气。</p>
+</li>
+<li>
+<p><strong>边界情况</strong>：长度正好 2 的 <code>()</code>（最短合法）和 <code>)(</code>（最短不合法）；长度正好 12 的合法与不合法各来一条，确认模型不被长度上限影响到判断。</p>
+</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">坑</p>
+<p>有些"看起来该有"的数据，会被 process_data 直接清洗掉，根本进不了训练集：空字符串 ""、只有 1 个字符的 ( 或 )、长度超过 12 的串（比如 14 个字符）、以及含有空格外字符的 (a)。规则是"删除全部空白后长度必须为 2 至 12，且只能包含半角圆括号"，不满足就跳过整条记录。所以：不要把空串和超长串当作训练数据的主力，它们只会让你的有效数据变少；但你可以故意留一两条用来验证自己的函数确实会跳过它们（前提是总数留有余量，清洗后仍要 ≥1 条）。另外，长度恰好 1 的 ( 虽然也是"未闭合"，但它在本题里属于会被清洗掉的边界，不能作为代表未闭合的主要样本。</p>
+</div>
+<h2 id="224">22.4　标签可靠性：不要出现错标，不要只靠"左右数量相等"<a class="headerlink" href="#224" title="Permanent link">&para;</a></h2>
+<p>标签（label）就是你写在 <code>valid</code> 字段里的 YES 或 NO。它是<strong>正确答案</strong>，不是"你觉得"。题目把话说到最硬：输入是否合法、标签是否正确，需要在构造数据时由你确认；<code>process_data</code> 只负责复制你的标签，不做任何判断。也就是说，<strong>标错一条，模型就学错一条</strong>，没有任何程序会替你兜底。</p>
+<h3 id="_4">一个可靠的打标签方法<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>用你熟悉的"记账"法，写成一个小函数：从左到右扫，遇到 <code>(</code> 记 +1、遇到 <code>)</code> 记 -1；任何时刻账本变成负数就判 NO；扫完账本必须是 0，否则 NO。两次条件一起判，逻辑上等价于题面两条规则。这个函数只用在<strong>你自己的造数据脚本</strong>里，绝不要写进 <code>submission.py</code>（那会违反规则 5）。</p>
+<p>为了保险，还可以用第二种方法交叉验证：数一数左括号和右括号的个数，如果<strong>总数不相等</strong>，那一定是 NO；如果总数相等，再用上面的记账法确认过程条件。两种方法对同一条数据给出不同结论时，一定是哪里写错了，必须查清楚。</p>
+<h3 id="_5">要小心的几个"看起来像对的"标签<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>序列</th>
+<th>正确标签</th>
+<th>如果只看"数量相等"会怎么错</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>)(</code></td>
+<td>NO</td>
+<td>数量 1 比 1 相等，容易被误标 YES——这就是题面点名的反例</td>
+</tr>
+<tr>
+<td><code>)()(</code></td>
+<td>NO</td>
+<td>数量 2 比 2 相等，且首尾对称，极具迷惑性</td>
+</tr>
+<tr>
+<td><code>())(()</code></td>
+<td>NO</td>
+<td>数量 3 比 3 相等，第 3 个字符处账本变负</td>
+</tr>
+<tr>
+<td><code>((()))</code></td>
+<td>YES</td>
+<td>数量相等且过程安全，真合法</td>
+</tr>
+<tr>
+<td><code>(())()</code></td>
+<td>YES</td>
+<td>数量相等且过程安全，真合法</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">必背</p>
+<p>题面原话：不要让"左右数量相等"成为训练数据中判断合法的唯一线索。具体做法就是——在数据集里安排足够多"数量相等但顺序错"的 NO，让模型没法用"数数量"这条捷径过关。</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">技巧</p>
+<p>自检标签有一套土办法，很有效：把 100 条数据按标签分组，分别统计它们的长度分布和"数量相等"的比例。如果所有 NO 都是"数量不相等"的，而所有"数量相等"的都是 YES，那你的数据几乎肯定有坑，必须补第三类。反过来，如果 YES 和 NO 在长度上都有分布、NO 里有一批"数量相等但顺序错"，这份数据就靠谱了。</p>
+</div>
+<h2 id="225-4">22.5　禁止把 4 个公开模型测试点的输入放进训练集<a class="headerlink" href="#225-4" title="Permanent link">&para;</a></h2>
+<p>题面写得很明确：<strong>不得把四个公开模型测试的完整输入直接加入训练集，也不得仅改变空格后加入。</strong>四个公开点的输入是（第 23 章还会用到）：</p>
+<table>
+<thead>
+<tr>
+<th>点</th>
+<th>输入</th>
+<th>标准答案</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M01</td>
+<td><code>序列：(()(()()))</code></td>
+<td><code>[Valid]: YES</code></td>
+<td>合法的混合结构，长 10</td>
+</tr>
+<tr>
+<td>M02</td>
+<td><code>序列：((())())()</code></td>
+<td><code>[Valid]: YES</code></td>
+<td>合法的混合结构，长 10</td>
+</tr>
+<tr>
+<td>M03</td>
+<td><code>序列：())(()())(</code></td>
+<td><code>[Valid]: NO</code></td>
+<td>不合法，长度 10 但顺序错</td>
+</tr>
+<tr>
+<td>M04</td>
+<td><code>序列：((()())())(</code></td>
+<td><code>[Valid]: NO</code></td>
+<td>不合法，长度 11（奇数）且未闭合</td>
+</tr>
+</tbody>
+</table>
+<p>为什么不许放？两个层面的原因。第一是<strong>规则层面</strong>：这是题面的明文禁令，违反它等于自己给自己挖坑。第二是<strong>能力层面</strong>：把公开点原样放进训练集，等于考试前先背答案——它在公开四点上分数很好看，但模型学到的是"这几个特定串对应这几个特定答案"，对没见过的隐藏点毫无帮助，反而因为挤占了 100 条的额度，让真正有用的覆盖样本变少。</p>
+<div class="admonition warning">
+<p class="admonition-title">坑</p>
+<p>"仅改变空格后加入"也被明确禁止。比如把 序列：(()(()())) 改写成 序列： (()(()())) 再放进训练集，仍然是违规，而且在训练里几乎不会带来任何差异。判断标准很简单：你的数据里，不该出现和公开点长得几乎一样的输入。要覆盖的是"长 10 的混合结构合法串"这个规律，而不是这一条具体的串——你可以用 (()())(())、((())(())) 这样的同规律样本，它们既覆盖了规律，又不是公开点本体。</p>
+</div>
+<h2 id="226">22.6　生成脚本示例与抽检方法<a class="headerlink" href="#226" title="Permanent link">&para;</a></h2>
+<p>下面是造数据用的脚本。它<strong>不是要提交的 <code>submission.py</code></strong>，只是你电脑上跑一次的工具。它的思路是：枚举 → 打标签 → 按类别挑选 → 去重 → 写成 JSONL → 再用另一段代码抽检。</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># make_data.py —— 只是造数据工具，不要提交这个文件</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">is_valid</span><span class="p">(</span><span class="n">seq</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;两种条件一起判：某个前缀账本变负，或者收尾账本不为 0，都是不合法。&quot;&quot;&quot;</span>
+    <span class="n">depth</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ch</span> <span class="o">==</span> <span class="s2">&quot;(&quot;</span><span class="p">:</span>
+            <span class="n">depth</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">depth</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;(&quot;</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+<p>逐段解释：</p>
+<ul>
+<li><code>is_valid</code> 是<strong>唯一</strong>的标签来源。它把两条规则写在同一个循环里：过程条件靠 `depth  s.count(")")]
+    bad_extra = [s for s in bad if s.count(")") &gt; s.count("(")]
+    bad_balanced = [s for s in bad if s.count("(") == s.count(")")]
+    picked.extend(bad_unclosed[:2])
+    picked.extend(bad_extra[:2])
+    picked.extend(bad_balanced[:3])   # 数量相等但顺序错，最重要</li>
+</ul>
+<h1 id="2-jsonl">2) 去重并按原始顺序打包成 JSONL 记录<a class="headerlink" href="#2-jsonl" title="Permanent link">&para;</a></h1>
+<p>rows = []
+seen = set()
+for s in picked:
+    if s in seen:
+        continue
+    seen.add(s)
+    rows.append({"sequence": s, "valid": "YES" if is_valid(s) else "NO"})</p>
+<h1 id="3-100">3) 兜底：保证总量不超过 100；不够就补长一点的混合合法串<a class="headerlink" href="#3-100" title="Permanent link">&para;</a></h1>
+<p>rows = rows[:100]
+with open("train.jsonl", "w", encoding="utf-8") as f:
+    for row in rows:
+        f.write(json.dumps(row, ensure_ascii=False) + "\n")</p>
+<p>print("写出条数：", len(rows))
+<div class="highlight"><pre><span></span><code>关键点在挑选那一段：**合法串按长度均匀取，不合法串按&quot;错在哪&quot;分类取**。`bad_balanced` 这一行尤其重要，它专门捞&quot;数量相等但顺序错&quot;的串，也就是整个数据集里最值钱的那一批。`json.dumps(..., ensure_ascii=False)` 可以不写转义、直接把中文写成中文；`json.dumps` 负责把字典变成一行合法 JSON，我们只管在末尾补一个换行符，这就是 JSONL（每行一个 JSON 对象）。
+
+!!! tip &quot;技巧&quot;
+    这个脚本给的是骨架，你可以把它当模板改成&quot;每种不合法类型各取 6 条&quot;的版本，把额度分得更均匀。改造时守住一条：标签永远只由 is_valid 产生，绝不用手写字符串。
+
+### 抽检：三类检查
+
+写完 `train.jsonl` 后不要马上去训练，先抽检。`submission.py` 写好后，用下面这段代码一次性查三件事。
+
+```python
+# check_data.py —— 抽检脚本
+import json
+from collections import Counter
+from submission import process_data
+
+# 第一件事：文件本身的形状
+with open(&quot;train.jsonl&quot;, encoding=&quot;utf-8&quot;) as f:
+    lines = [ln for ln in f.read().split(&quot;\n&quot;) if ln.strip()]
+records = [json.loads(ln) for ln in lines]
+print(&quot;原始条数：&quot;, len(records), &quot;（必须 1 到 100）&quot;)
+print(&quot;标签分布：&quot;, Counter(r[&quot;valid&quot;] for r in records))
+print(&quot;长度分布：&quot;, Counter(len(r[&quot;sequence&quot;].replace(&quot; &quot;, &quot;&quot;)) for r in records))
+
+# 第二件事：清洗后还剩多少，有没有被误删
+cleaned = process_data(records)
+print(&quot;处理后条数：&quot;, len(cleaned), &quot;（必须 1 到 100）&quot;)
+print(&quot;处理后再去重：&quot;, len({c[&quot;input&quot;] for c in cleaned}))
+
+# 第三件事：把标签重新独立验算一遍，找出错标
+def twice_check(seq):
+    if seq.count(&quot;(&quot;) != seq.count(&quot;)&quot;):
+        return &quot;NO&quot;
+    depth = 0
+    for ch in seq:
+        depth = depth + (1 if ch == &quot;(&quot; else -1)
+        if depth &lt; 0:
+            return &quot;NO&quot;
+    return &quot;YES&quot;
+
+bad = [r for r in records if twice_check(r[&quot;sequence&quot;]) != r[&quot;valid&quot;]]
+print(&quot;可疑错标条数：&quot;, len(bad))
+for r in bad[:10]:
+    print(&quot;  检查：&quot;, r)
+
+# 额外提醒：NO 里有多少是&quot;数量相等但顺序错&quot;
+balanced_no = [r for r in records
+               if r[&quot;valid&quot;] == &quot;NO&quot;
+               and r[&quot;sequence&quot;].count(&quot;(&quot;) == r[&quot;sequence&quot;].count(&quot;)&quot;)]
+print(&quot;数量相等却是 NO 的条数：&quot;, len(balanced_no), &quot;（太少就是数据有坑）&quot;)
+</code></pre></div></p>
+<p>读这段输出要像做题一样：<strong>原始条数</strong>在 1 到 100 之间；<strong>处理后条数</strong>最好等于原始条数（说明没有记录被清洗规则误删，或者你故意放的那一两条边界被删掉后仍有余量）；<strong>可疑错标条数为 0</strong>；<strong>数量相等却是 NO 的条数不为 0</strong>，最好和"数量相等且是 YES 的条数"在同一个量级。</p>
+<div class="admonition question">
+<p class="admonition-title">考试怎么考</p>
+<p>这些抽检只是你自查用的，不影响得分；但它们能在训练之前就把"数据错标"这种致命问题拦下来。要知道，模型点在训练完成、保存并重载 LoRA 之后才有反馈，而训练是要花时间排队和跑 GPU 的。等你发现公开点全错再回头改数据，时间可能已经不够了。所以：数据自查 → 函数自查 → 再点训练，这个顺序不能反。</p>
+</div>
+<h2 id="227-1100">22.7　第二题的数据要求：把官方数据原则落到 1～100 条上<a class="headerlink" href="#227-1100" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>官方原则</th>
+<th>第二题里的做法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>类别要平衡</td>
+<td>合法序列与不合法序列数量尽量接近（各约 50 条）。官方指出严重不平衡时小批次里可能一个少数类样本都没有；同时提醒"准确率在不平衡数据上不可靠"——对第二题来说，模型只答"YES"也能蒙对一半。</td>
+</tr>
+<tr>
+<td>测试集不能进训练集</td>
+<td>公开模型测试点的完整输入（以及只改空格的版本）官方明令禁止放入 <code>train.jsonl</code>；这与"训练集与测试集必须不同"是同一个道理。</td>
+</tr>
+<tr>
+<td>重复样本会虚高分数</td>
+<td>官方建议拆分后删除与训练集重复的样本；本题表现为"不要靠重复同一模式凑数量"，构造时就去重。</td>
+</tr>
+<tr>
+<td>数据格式以任务为准</td>
+<td>标准格式与对话格式是两套写法（<code>{"text": ...}</code> 与 <code>{"messages": [...]}</code>），本题用 <code>sequence</code> / <code>valid</code> 字段——<strong>以题面模板为准</strong>。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="228-100">22.8　覆盖矩阵：100 条数据该写什么<a class="headerlink" href="#228-100" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>取值</th>
+<th>建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>长度</td>
+<td>2、4、6、8、10、12</td>
+<td>每种长度均匀分布</td>
+</tr>
+<tr>
+<td>结构</td>
+<td>连续型 <code>()()</code>、嵌套型 <code>(())</code>、混合型</td>
+<td>合法样本覆盖三类</td>
+</tr>
+<tr>
+<td>不合法原因</td>
+<td>未闭合、额外右括号、数量相等但顺序错、奇数长度</td>
+<td>每类至少 8～10 条</td>
+</tr>
+<tr>
+<td>标签</td>
+<td><code>YES</code> / <code>NO</code></td>
+<td>两类各约一半</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">坑</p>
+<p>只构造"数量相等/不等"两类样本，是最常见的失败方式：模型会学成"数括号数量"，遇到 )( 这种数量相等但顺序错的序列就答错。</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">本章要记住的 7 件事</p>
+<ul>
+<li>LoRA 是给现成模型挂一层小的可训练补丁，不改原参数；<code>loraRank</code> 决定补丁大小。</li>
+<li>100 条够用，是因为这道题规律很薄；但前提是覆盖到位，否则模型只会学到"数量相等就是合法"。</li>
+<li>覆盖矩阵的横轴是长度 2/4/6/8/10/12，纵轴是连续、嵌套、混合、四类不合法。</li>
+<li>四类不合法是未闭合、额外右括号、数量相等但顺序错、奇数长度；第三类最关键。</li>
+<li>空串、长度 1、长度超过 12、含非括号字符的串都会被 <code>process_data</code> 清洗掉，别让它们占额度。</li>
+<li>标签只能由独立的检查函数产生，绝不用手写；写完要抽检"数量相等却是 NO"的条数是否为 0 之外。</li>
+<li>四个公开模型点的完整输入（以及只改空格的版本）绝对不能放进训练集。</li>
+</ul>
+</div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.indexes", "content.code.copy", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>LMCC 学习图谱</title>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>html,body{margin:0;height:100%}#net{width:100%;height:100vh}</style></head>
+<body><div id="net"></div>
+<script>
+fetch('learning-graph.json').then(r=>r.json()).then(g=>{
+  const nodes=new vis.DataSet(g.nodes.map(n=>({id:n.id,label:n.label,group:n.group})));
+  const edges=new vis.DataSet(g.edges.map(e=>({from:e.from,to:e.to,arrows:'to'})));
+  new vis.Network(document.getElementById('net'),{nodes,edges},{
+    physics:{stabilization:true,barnesHut:{springLength:120}},
+    nodes:{shape:'dot',size:10,font:{size:12}},
+    edges:{color:{color:'#9aa7b4'}},interaction:{hover:true}});
+});
+</script></body></html>

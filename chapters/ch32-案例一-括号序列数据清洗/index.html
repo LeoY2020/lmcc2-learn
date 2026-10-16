@@ -1,0 +1,3067 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="2026 LMCC 第二轮三题（Prompt 调优 / LoRA 数据 / Vibe Coding）复习手册">
+      
+      
+      
+      
+        <link rel="prev" href="../ch31-%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6%E4%B8%8E%E5%AE%9E%E9%AA%8C%E8%AE%B0%E5%BD%95/">
+      
+      
+        <link rel="next" href="../ch33-%E6%A1%88%E4%BE%8B%E4%BA%8C-todomvc-%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>第 32 章 案例一：括号序列数据清洗 - LMCC 第二轮通关手册</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#32" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="LMCC 第二轮通关手册" class="md-header__button md-logo" aria-label="LMCC 第二轮通关手册" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LMCC 第二轮通关手册
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              第 32 章 案例一：括号序列数据清洗
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="切换到深色"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="切换到深色" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="切换到浅色"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="切换到浅色" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="LMCC 第二轮通关手册" class="md-nav__button md-logo" aria-label="LMCC 第二轮通关手册" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LMCC 第二轮通关手册
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../course-description/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    课程说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch01-%E8%80%83%E8%AF%95%E5%BD%A2%E5%BC%8F%E4%B8%8E%E8%AF%84%E5%88%86%E6%9C%BA%E5%88%B6/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第一部分考试与工具
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第一部分考试与工具
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch02-%E4%B8%8A%E6%9C%BA%E7%8E%AF%E5%A2%83%E4%B8%8E%E5%B7%A5%E5%85%B7%E9%93%BE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 2 章 上机环境与工具链
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch03-%E4%BD%9C%E7%AD%94%E7%BA%AA%E5%BE%8B%E4%B8%8E%E4%BA%A4%E4%BB%98%E8%A6%81%E6%B1%82/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 3 章 作答纪律与交付要求
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch04-python-%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第二部分Python 程序设计
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第二部分Python 程序设计
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch05-%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%8E%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 5 章 字符串与文本处理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch06-%E5%88%97%E8%A1%A8-%E5%85%83%E7%BB%84-%E9%9B%86%E5%90%88-%E5%AD%97%E5%85%B8%E4%B8%8E%E6%8E%A8%E5%AF%BC%E5%BC%8F/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 6 章 列表、元组、集合、字典与推导式
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch07-%E6%8E%A7%E5%88%B6%E6%B5%81%E4%B8%8E%E5%87%BD%E6%95%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 7 章 控制流与函数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch08-%E6%A8%A1%E5%9D%97-%E6%96%87%E4%BB%B6%E4%B8%8E-json/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 8 章 模块、文件与 JSON
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch09-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E4%B8%8E%E7%A8%8B%E5%BA%8F%E8%B0%83%E8%AF%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 9 章 正则表达式与程序调试
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch10-%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第三部分大语言模型与提示词工程
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第三部分大语言模型与提示词工程
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch11-%E5%AF%B9%E8%AF%9D%E7%BB%93%E6%9E%84-%E6%A8%A1%E6%9D%BF%E4%B8%8E%E6%8E%A8%E7%90%86%E6%A8%A1%E5%BC%8F/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 11 章 对话结构、模板与推理模式
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch12-%E6%8F%90%E7%A4%BA%E8%AF%8D%E7%9A%84%E7%BB%93%E6%9E%84%E4%B8%8E%E5%86%99%E6%B3%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 12 章 提示词的结构与写法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch13-%E4%BB%BB%E5%8A%A1%E8%A7%84%E5%88%99%E7%9A%84%E8%A7%A3%E6%9E%90%E4%B8%8E%E8%A1%A8%E8%BE%BE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 13 章 任务规则的解析与表达
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch14-%E8%BE%93%E5%87%BA%E6%A0%BC%E5%BC%8F%E7%BA%A6%E6%9D%9F/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 14 章 输出格式约束
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch15-%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%E4%B8%8E%E8%BE%B9%E7%95%8C%E6%9D%A1%E4%BB%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 15 章 提示词注入与边界条件
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch16-%E6%8F%90%E7%A4%BA%E8%AF%8D%E8%BF%AD%E4%BB%A3%E4%B8%8E%E9%A2%84%E7%AE%97%E7%AE%A1%E7%90%86/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 16 章 提示词迭代与预算管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch17-%E4%BB%8E%E8%A7%84%E6%A0%BC%E5%88%B0%E7%A8%8B%E5%BA%8F%E9%80%BB%E8%BE%91/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第四部分数据清洗与函数实现
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第四部分数据清洗与函数实现
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch18-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%A0%A1%E9%AA%8C%E4%B8%8E%E5%AE%89%E5%85%A8%E5%8F%96%E5%80%BC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 18 章 数据类型校验与安全取值
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch19-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%B8%85%E6%B4%97%E4%B8%8E%E8%A7%84%E8%8C%83%E5%8C%96/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 19 章 字符串清洗与规范化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch20-%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97%E5%87%BD%E6%95%B0%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%8E%E6%B5%8B%E8%AF%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 20 章 数据清洗函数的实现与测试
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch21-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E4%B8%8E%E8%AE%AD%E7%BB%83%E6%B5%81%E7%A8%8B/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第五部分机器学习与参数高效微调
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第五部分机器学习与参数高效微调
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch22-%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E6%9E%84%E9%80%A0%E4%B8%8E%E6%A0%87%E7%AD%BE%E8%B4%A8%E9%87%8F/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 22 章 训练数据构造与标签质量
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch23-%E5%8F%82%E6%95%B0%E9%AB%98%E6%95%88%E5%BE%AE%E8%B0%83-lora-%E4%B8%8E%E8%AE%AD%E7%BB%83%E5%8F%82%E6%95%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 23 章 参数高效微调（LoRA）与训练参数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch24-%E6%A8%A1%E5%9E%8B-%E5%88%86%E8%AF%8D%E5%99%A8%E4%B8%8E%E6%8E%A8%E7%90%86%E6%B5%81%E7%A8%8B/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第六部分模型、推理与语义检索
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第六部分模型、推理与语义检索
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch25-%E5%88%86%E8%AF%8D%E5%99%A8%E4%B8%8E%E5%BA%8F%E5%88%97%E5%A4%84%E7%90%86/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 25 章 分词器与序列处理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch26-%E5%AF%B9%E8%AF%9D%E6%A8%A1%E6%9D%BF%E7%9A%84%E5%AE%9E%E7%8E%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 26 章 对话模板的实现
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch27-%E7%94%9F%E6%88%90%E5%8F%82%E6%95%B0%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 27 章 生成参数的实现细节
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch28-%E6%96%87%E6%9C%AC%E5%90%91%E9%87%8F%E4%B8%8E%E8%AF%AD%E4%B9%89%E7%9B%B8%E4%BC%BC%E5%BA%A6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 28 章 文本向量与语义相似度
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch29-%E4%B8%8E%E7%BC%96%E7%A8%8B-agent-%E5%8D%8F%E4%BD%9C%E7%9A%84%E6%96%B9%E6%B3%95/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第七部分工程实践与人机协作
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第七部分工程实践与人机协作
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch30-token-%E9%A2%84%E7%AE%97%E4%B8%8E%E5%B7%A5%E7%A8%8B%E6%88%90%E6%9C%AC%E7%AE%A1%E7%90%86/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 30 章 Token 预算与工程成本管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch31-%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6%E4%B8%8E%E5%AE%9E%E9%AA%8C%E8%AE%B0%E5%BD%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 31 章 版本控制与实验记录
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="./" class="md-nav__link md-nav__link--active">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第八部分应用案例与应试
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link md-nav__link--active" for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第八部分应用案例与应试
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch33-%E6%A1%88%E4%BE%8B%E4%BA%8C-todomvc-%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 33 章 案例二：TodoMVC 功能实现
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch34-%E5%A4%87%E8%80%83%E8%AE%A1%E5%88%92%E4%B8%8E%E8%80%83%E5%9C%BA%E7%AD%96%E7%95%A5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 34 章 备考计划与考场策略
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch35-%E6%A8%A1%E6%9D%BF%E5%BA%93/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 35 章 模板库
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch36-%E7%BB%BC%E5%90%88%E7%BB%83%E4%B9%A0-%E5%90%AB%E7%AD%94%E6%A1%88/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 36 章 综合练习（含答案）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch37-%E9%80%9F%E6%9F%A5%E8%A1%A8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 37 章 速查表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../apA-%E9%99%84%E5%BD%95-a-2026-%E4%B8%89%E9%A2%98%E8%A7%84%E6%A0%BC%E9%80%9F%E6%9F%A5/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录规格速查与术语手册
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    附录规格速查与术语手册
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../apB-%E9%99%84%E5%BD%95-b-%E6%9C%AF%E8%AF%AD%E8%A1%A8%E4%B8%8E%E6%8A%A5%E9%94%99%E5%AF%B9%E7%85%A7%E8%A1%A8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录 B 术语表与报错对照表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../learning-graph/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    学习图谱
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_12" id="__nav_12_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    学习图谱
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learning-graph/list-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概念清单
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learning-graph/quality-metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    质量指标
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learning-graph/taxonomy-distribution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分类分布
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    术语表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quiz/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    自测练习
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    常见问题
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../sims/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    交互模拟
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_16" id="__nav_16_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    交互模拟
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sims/bracket-validator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    括号序列判定
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sims/token-budget/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Token 预算计算器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    关于本书
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    资料来源
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#321-2-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        32.1 任务与输入格式："序列："加 2 至 12 个半角圆括号
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#322" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        32.2 合法序列的两个条件与四类不合法情况
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="32.2 合法序列的两个条件与四类不合法情况">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么第三类最容易漏
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#323" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        32.3 输出格式的精确要求：一个字符都不能差
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#324-trainjsonlsubmissionpytraining_paramsjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        32.4 三份提交物：train.jsonl、submission.py、training_params.json
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#325-2-20-4-40-4-40" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        32.5 评分结构：函数 2 点 20 分、公开模型 4 点 40 分、隐藏模型 4 点 40 分
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#326" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        32.6 总览：六条规则一张表
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#327-1records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        32.7 规则 1：records 必须是列表，脏记录要跳过
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#328-2-212" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        32.8 规则 2：删空白、长度 2～12、只允许半角括号
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#329-3valid-inputoutput" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        32.9 规则 3：valid 归一化与 input/output 的精确拼接
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3210-4-input" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        32.10 规则 4：按规范化后的 input 稳定去重，冲突要抛错
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3211-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        32.11 规则 5：只清洗，不判断，不打印，不扩增
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3212-6-16kib" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        32.12 规则 6：纯函数、允许的标准库、常量位置与 16KiB 上限
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="32">第 32 章 案例一：括号序列数据清洗<a class="headerlink" href="#32" title="Permanent link">&para;</a></h1>
+<div class="admonition info">
+<p class="admonition-title">本章目标</p>
+<p>读完这一章，你能说清：第二题到底要你交什么、模型看到的输入长什么样、什么叫"合法序列"、输出格式精确到哪几个字符、以及 100 分是怎么拆成 20 分加 40 分加 40 分的。</p>
+</div>
+<p>很多同学一上来就打开编辑器开始写生成脚本，结果写了两小时才发现标签标错了一批、函数返回的键名写成了别的单词。避免这种返工的唯一办法，是先花二十分钟把题面读成一张"规格表"。这一章就是帮你把这张表画出来。</p>
+<h2 id="321-2-12">32.1　任务与输入格式："序列："加 2 至 12 个半角圆括号<a class="headerlink" href="#321-2-12" title="Permanent link">&para;</a></h2>
+<p>这一题让模型做的事只有一件：<strong>判断输入的括号序列是否合法</strong>。模型看到的每一条输入，都由两段拼成：一段固定前缀，加上括号串本身。</p>
+<div class="highlight"><pre><span></span><code>序列：()()
+序列：(()(()()))
+序列：())(()())(
+</code></pre></div>
+<p>把规则说精确：</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>规定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>固定前缀</td>
+<td>中文<code>序列：</code>四个字符（"序列"两字加一个<strong>全角</strong>冒号），紧跟着括号串，中间没有空格</td>
+</tr>
+<tr>
+<td>括号种类</td>
+<td><strong>只允许半角圆括号</strong> <code>(</code> 与 <code>)</code>，不能出现方括号、花括号、全角括号、字母、数字、空格</td>
+</tr>
+<tr>
+<td>长度范围</td>
+<td>括号串长度 <strong>2 至 12</strong>，也就是最少一对，最多十二个字符</td>
+</tr>
+<tr>
+<td>题目里出现的现象</td>
+<td>合法与不合法混在一起，模型要能分开；长度有奇有偶</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">坑</p>
+<p>前缀里的冒号是全角"："，而答案部分 [Valid]:  里的冒号是半角":"。这两个冒号长得像，实际是两个不同字符。写训练数据时如果把前缀里的冒号打成半角，训练数据里的输入格式就和评测时的输入格式不一致，模型会看到一种它考试时根本见不到的写法。这类错误肉眼很难发现，建议写完数据后统一用程序检查字符。</p>
+</div>
+<p>还要注意"固定系统提示词"的存在。训练和评测时，平台会在你这条输入的前面自动加上下面这段话，它是<strong>只读内容，你不能修改</strong>：</p>
+<div class="highlight"><pre><span></span><code>判断序列是否合法：从左到右任意前缀左括号数不能少于右括号，最终两者数目相等。合法只输出[Valid]: YES，否则只输出[Valid]: NO，冒号后一个半角空格，不加解释。
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>提示词里的句子</th>
+<th>它规定了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>判断序列是否合法</td>
+<td>任务类型：只做二分类判定，不是改写，也不是解释</td>
+</tr>
+<tr>
+<td>从左到右任意前缀左括号数不能少于右括号</td>
+<td>过程条件，也就是"账本不能变负"</td>
+</tr>
+<tr>
+<td>最终两者数目相等</td>
+<td>结束条件，也就是"账本必须归零"</td>
+</tr>
+<tr>
+<td>合法只输出[Valid]: YES，否则只输出[Valid]: NO</td>
+<td>两种输出必须逐字一致，别的一律不行</td>
+</tr>
+<tr>
+<td>冒号后一个半角空格</td>
+<td>那一个空格是硬规定，不能多也不能少</td>
+</tr>
+<tr>
+<td>不加解释</td>
+<td>不许写理由，不许先分析再回答</td>
+</tr>
+</tbody>
+</table>
+<p>把自己造的数据和这张表对照着看，你会发现一条规律：<strong>系统提示词说的规则，就是你造数据时用的规则；系统提示词说的格式，就是你写标签时的格式。</strong>三者必须一致，模型才不会被两套说法拉扯。</p>
+<p>这段话相当于模型在考试时拿到的"考试说明"。你在训练数据里<strong>不需要、也不能</strong>重复它——你只负责提供"输入 → 输出"这一对。理解这一点很重要：模型最终学到的行为，是"看到系统提示词里的规则 + 看到你给的输入，就吐出你给的那种答案"。如果系统提示词说 YES 长什么样，而你训练数据里写的是别的样子，模型就会精神分裂。</p>
+<div class="admonition question">
+<p class="admonition-title">考试怎么考</p>
+<p>推理时关闭 thinking（不让模型先写一段思考再回答）、使用确定性生成（同样输入永远给同样输出，不是随机抽签）、最多生成 128 Token。这三条一起决定了：模型必须"张口就说"，没有慢慢想的余地，也没有第二次机会。所以你要训练的是条件反射式的输出习惯，而不是"长篇推理能力"。</p>
+</div>
+<h2 id="322">32.2　合法序列的两个条件与四类不合法情况<a class="headerlink" href="#322" title="Permanent link">&para;</a></h2>
+<p>题面把"合法"写成了两个必须<strong>同时</strong>满足的条件。这两句话看起来平淡，但它们是整个第二题的地基：你的数据标签对不对，全靠这两句话判；模型能不能答对隐藏点，也全靠它有没有学到这两句话的差别。</p>
+<table>
+<thead>
+<tr>
+<th>条件名</th>
+<th>完整规则</th>
+<th>人话解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>过程条件</strong></td>
+<td>从左到右，任意前缀的左括号数量都不能少于右括号数量</td>
+<td>边走边记账，账本不能变成负数。一旦出现"前面还没开括号就先来一个右括号"，立刻出局</td>
+</tr>
+<tr>
+<td><strong>结束条件</strong></td>
+<td>整个序列的左括号和右括号数量必须相等</td>
+<td>走到终点时账本必须正好归零，开了的括号必须全部关掉</td>
+</tr>
+</tbody>
+</table>
+<p>只有两条都满足，才是 YES。<strong>数量相等并不一定合法</strong>——题面特意强调了一句：<code>)(</code> 的左括号和右括号各一个，数量相等，但第一个字符就是右括号，过程条件当场失败，所以它是 NO。这正是这一题最想考你的地方。</p>
+<p>反过来说，不合法可以按"为什么错"分成四类。分类不是为了好看，而是因为<strong>你的训练数据必须把这四类都喂给模型</strong>，否则模型只会背下"数量相等就是合法"这个错误规律。</p>
+<table>
+<thead>
+<tr>
+<th>不合法类型</th>
+<th>错在哪里</th>
+<th>例子（都会被判 NO）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. 未闭合</strong></td>
+<td>结束条件失败：左括号开多了，最后账本没归零</td>
+<td><code>(</code> 不算（长度只有 1，会被清洗掉）、<code>((</code>、<code>(()</code>、<code>(()(</code>、<code>((((</code></td>
+</tr>
+<tr>
+<td><strong>2. 额外右括号</strong></td>
+<td>过程条件失败：某个前缀的右括号多于左括号</td>
+<td><code>())</code>、<code>())(</code>、<code>))</code>、<code>())))</code></td>
+</tr>
+<tr>
+<td><strong>3. 数量相等但顺序错</strong></td>
+<td>两条都错得"刚好平衡"：总数相等，但中间某处右括号领先</td>
+<td><code>)(</code>、<code>)()(</code>、<code>())(()</code>、<code>())()(</code></td>
+</tr>
+<tr>
+<td><strong>4. 奇数长度</strong></td>
+<td>长度是奇数时左右数量不可能相等，必然失败；但失败的原因不止长度</td>
+<td><code>()(</code>、<code>((</code> 长度是偶数却未闭合、<code>)))</code>、<code>()())</code></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">技巧</p>
+<p>用 CSP-J 的老办法：把"合法"想成走楼梯。( 是上一步，) 是下一步。楼梯不能低于地面（过程条件），走完全程必须正好回到地面（结束条件）。"不能低于地面"就是"前缀里左括号不能少于右括号"。用这个比喻去生成反例，你会发现自己造出来的错误类型天然就是这四类，不会漏。</p>
+</div>
+<h3 id="_1">为什么第三类最容易漏<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<p>前两类错误"一眼看上去就不对"，你造数据时很自然会写出来。第三类——数量完全相等、只是顺序错了——才是真正的考点。<code>)()(</code> 这种串，如果只看"左括号几个、右括号几个"，会得出"相等，合法"的错误结论。而一个只见过合法串和明显坏串的模型，只要发现"数量相等"这条捷径就够它在训练集上拿满分了，于是在隐藏点上遇到这种平衡但顺序错的串就会答错。</p>
+<p>所以你的 100 条数据里，第三类必须占有明确的一份数量，并且要覆盖不同长度、不同错位位置：错在最前面（<code>)(</code>）、错在中间（<code>())(</code>）、错在偏后（<code>(())())(</code> 这类）、以及错好几处（<code>)()(</code>）。</p>
+<h2 id="323">32.3　输出格式的精确要求：一个字符都不能差<a class="headerlink" href="#323" title="Permanent link">&para;</a></h2>
+<p>模型答完之后，平台会拿它的输出跟标准答案比对。比对方式题面写得非常直白：<strong>只去掉最终答案首尾的空白，然后逐字匹配</strong>，不改变内部的空格和大小写。这就意味着下面这些都会算错：</p>
+<table>
+<thead>
+<tr>
+<th>模型输出</th>
+<th>判定</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[Valid]: YES</code></td>
+<td>对</td>
+<td>完全符合</td>
+</tr>
+<tr>
+<td><code>[Valid]: YES</code></td>
+<td>错</td>
+<td>冒号后是两个空格，内部空格不可改</td>
+</tr>
+<tr>
+<td><code>[Valid]:YES</code></td>
+<td>错</td>
+<td>冒号后少了那一个半角空格</td>
+</tr>
+<tr>
+<td><code>[valid]: YES</code></td>
+<td>错</td>
+<td>大小写必须固定：V 大写</td>
+</tr>
+<tr>
+<td><code>[Valid]: Yes</code></td>
+<td>错</td>
+<td>YES 必须全大写</td>
+</tr>
+<tr>
+<td><code>序列合法，所以 [Valid]: YES</code></td>
+<td>错</td>
+<td>不许加解释；逐字匹配看的是整串</td>
+</tr>
+<tr>
+<td><code>[Valid]: NO，因为括号未闭合</code></td>
+<td>错</td>
+<td>多写了理由</td>
+</tr>
+<tr>
+<td>输出被平台 `` 之类包裹的一段话</td>
+<td>错</td>
+<td>本题关闭 thinking，直接输答案</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">必背</p>
+<p>两种正确答案，背到能默写：合法是 [Valid]: YES，不合法是 [Valid]: NO。方括号、大写 V、冒号、冒号后恰好一个半角空格、三个字母全大写，一个都不能改，前后也不能多一个字。</p>
+</div>
+<p>顺带解释两个词，这一部分以后会反复用到：</p>
+<ul>
+<li>
+<p><strong>Token（词元）</strong>：模型不认识"字"，它把文本切成一小块一小块来读，每一小块叫一个 Token。中文通常一个字算一个 Token 左右，英文单词和标点也各占若干。<code>[Valid]: YES</code> 这样一行，大概要吃掉几个到十几个 Token。本题<strong>最多生成 128 Token</strong>，意思是模型最多能吐这么多块，用完就强制停；答案本身很短，正常绝不会超，但如果模型养成"先啰嗦一句再给答案"的习惯，就可能被截断，而截断就算错。</p>
+</li>
+<li>
+<p><strong>thinking（思考）</strong>：有些模型可以先在内部写一段"草稿"再给正式答案。本题<strong>关闭 thinking</strong>，模型必须直接给答案。好处是稳定、省 Token；代价是它没有任何"算一算"的机会，只能靠训练时养成的直觉。这就是为什么数据质量比参数更重要。</p>
+</li>
+</ul>
+<h2 id="324-trainjsonlsubmissionpytraining_paramsjson">32.4　三份提交物：train.jsonl、submission.py、training_params.json<a class="headerlink" href="#324-trainjsonlsubmissionpytraining_paramsjson" title="Permanent link">&para;</a></h2>
+<p>这一题要交的东西只有三份，但每一份都有硬性限制。限制不是建议，是平台在训练前会真的检查、不满足就报错的门槛。</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>要写什么</th>
+<th>限制</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>train.jsonl</code></td>
+<td>你自己构造并标注的原始数据，UTF-8 编码，<strong>每行一个 JSON 对象</strong>，字段是 <code>sequence</code> 与 <code>valid</code>，两个都必须是字符串</td>
+<td>1 至 100 条；处理后也要保持在 1 至 100 条；整个文件最多 <strong>256KiB</strong>；每条数据连同固定系统提示词、对话格式和正确答案<strong>最多 512 Token</strong>；超长或空数据在训练前报错，平台<strong>不会截断正确答案</strong></td>
+</tr>
+<tr>
+<td><code>submission.py</code></td>
+<td>实现 <code>process_data(records)</code>：把已经标注好的原始记录整理成标准格式</td>
+<td>代码最多 <strong>16KiB</strong>；只允许<strong>纯函数定义、文档字符串，以及 json、re、collections 标准库</strong>；常量写在函数内；不读文件、不联网、不调模型</td>
+</tr>
+<tr>
+<td><code>training_params.json</code></td>
+<td>填五项训练参数</td>
+<td>每项都必须在允许范围内；一个文件里只写这五个键</td>
+</tr>
+</tbody>
+</table>
+<p>一个常见的困惑："原始数据和处理后的数据均不超过 100 条"是什么意思？意思是：你写的 <code>train.jsonl</code> 不能超过 100 行，而经过 <code>process_data</code> 清洗之后剩下的行数也要在 1 到 100 之间。如果你的函数把大部分记录都判成"跳过"，清洗后只剩 0 条，训练就会因为"空数据"报错，一分也拿不到。</p>
+<p>三份文件之间还有一条隐含的"数据链"，理解它就不容易交错东西：<code>train.jsonl</code> 是原始素材，<code>submission.py</code> 是加工机器，加工出来的标准记录才是真正喂给模型的东西；<code>training_params.json</code> 决定用多大的力气去学。所以如果最终成绩不好，排查的入口永远在这条链的最上游——先看原始素材够不够全，再看加工机器有没有出错，最后才看力气是否合适。</p>
+<div class="admonition warning">
+<p class="admonition-title">坑</p>
+<p>"每条最多 512 Token"这条限制不是让你去数 Token 数，而是提醒你别在 sequence 里塞奇怪的东西。本题的括号串最长 12 个字符，加上固定系统提示词（几十个 Token）和对话模板标记，正常情况下离 512 很远。真正会踩雷的是：你在 valid 字段里写上"YES，因为这个串..."这种解释，或者在数据里混入超长字符串。记住 valid 只能是 YES 或 NO。</p>
+</div>
+<p>最后还有一句关于提交的重要规定：<strong>最终提交会锁定三份作答文件以及对应的训练产物</strong>。公开四点（训练后现场可见）和隐藏四点（考后统一评测）<strong>必须用同一个最终 LoRA</strong>，不允许"把不同训练版本里各自最高的那一个拼起来"。也就是说，你没有"用 A 版本跑公开点、用 B 版本跑隐藏点"这条路。你训练出来的那一个模型，一荣俱荣。</p>
+<h2 id="325-2-20-4-40-4-40">32.5　评分结构：函数 2 点 20 分、公开模型 4 点 40 分、隐藏模型 4 点 40 分<a class="headerlink" href="#325-2-20-4-40-4-40" title="Permanent link">&para;</a></h2>
+<p>第二题满分 100 分，拆成三块。这三块的反馈方式和作答时序完全不同，必须分清楚，否则你会把时间花在错误的地方。</p>
+<table>
+<thead>
+<tr>
+<th>评测部分</th>
+<th>点数与分值</th>
+<th>反馈方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数据处理函数</td>
+<td><strong>2 点，每点 10 分</strong> 共 20 分</td>
+<td><strong>训练前</strong>就能运行；完整展示输入、期望返回值、实际返回值和对错</td>
+</tr>
+<tr>
+<td>训练后模型：公开</td>
+<td><strong>4 点，每点 10 分</strong> 共 40 分</td>
+<td>训练完成、<strong>保存并重载 LoRA 之后</strong>运行；完整展示输入、标准答案、模型输出和对错</td>
+</tr>
+<tr>
+<td>训练后模型：隐藏</td>
+<td><strong>4 点，每点 10 分</strong> 共 40 分</td>
+<td>考试结束后统一运行；现场<strong>不展示</strong>输入、答案、输出或分数</td>
+</tr>
+</tbody>
+</table>
+<p>把这张表翻译成作战计划：</p>
+<ul>
+<li>
+<p><strong>20 分是"白给"的</strong>。函数点在你训练之前就能反复验证，输入和期望全部公开，属于完全可以拿到手的分。先把这 20 分稳稳拿住，再去折腾训练。</p>
+</li>
+<li>
+<p><strong>40 分是"看得见但不够"的</strong>。公开四点在训练后能看到反馈，但它只覆盖了题目规则的一部分；它全对，不代表隐藏四点全对。</p>
+</li>
+<li>
+<p><strong>40 分是"看不见的"</strong>。隐藏四点考的正是你有没有真的把规律覆盖全——尤其是"数量相等但顺序错"这一类的不同长度变体。</p>
+</li>
+</ul>
+<div class="admonition question">
+<p class="admonition-title">考试怎么考</p>
+<p>模型点的判定细节：每个模型点只生成一次（不是三次取多数）；推理关闭 thinking、使用确定性生成、最多生成 128 Token；比对时只去掉答案首尾空白后逐字匹配，内部空格和大小写都不改。还有一个善意的规定：平台训练故障单独标记，不当成模型答错——如果你确定是平台侧的问题，分数不会被冤枉扣掉。</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">技巧</p>
+<p>现场可见部分最多 60 分（函数 20 分加公开模型 40 分）。这意味着你在考场上"看到的分数"最多只有六成，剩下四成完全没有反馈。所以千万不要用"公开四点全对"当作收工信号，而要反过来问自己：我构造的数据，是否让模型在没见过的长度和没见过的错位位置上也只依赖那两条正确规则？</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">本章要记住的 6 件事</p>
+<ul>
+<li>输入 = 全角冒号的 <code>序列：</code> 加上 2 至 12 个<strong>半角</strong>圆括号；前缀里没有空格。</li>
+<li>合法要同时满足两条：任意前缀左括号不少于右括号，且左右总数相等。</li>
+<li>不合法分四类：未闭合、额外右括号、数量相等但顺序错、奇数长度；第三类最容易漏，也最容易被隐藏点考到。</li>
+<li>答案只有两种写法：<code>[Valid]: YES</code> 与 <code>[Valid]: NO</code>，冒号后恰好一个半角空格，大小写固定，不加解释。</li>
+<li>三份提交物是 train.jsonl（1～100 条、≤256KiB、单条≤512 Token）、submission.py（≤16KiB、纯函数 + json/re/collections）、training_params.json（五项参数）。</li>
+<li>分数结构是函数 2 点 20 分、公开模型 4 点 40 分、隐藏模型 4 点 40 分；推理关 thinking、确定性生成、最多 128 Token、逐字匹配。</li>
+</ul>
+</div>
+<div class="admonition info">
+<p class="admonition-title">本章目标</p>
+<p>读完这一章，你能逐条背出官方六条清洗规则，说清每条规则"在防什么错"，并且明白为什么这个函数不许判断合法性。</p>
+</div>
+<p>这一章不写完整代码（完整实现在第 20 章），只做一件事：把官方给的数据清洗规则拆成六条，一条一条讲清楚它要你做什么、容易在哪里做错。规则是官方原文的意思，不要自己发挥。</p>
+<h2 id="326">32.6　总览：六条规则一张表<a class="headerlink" href="#326" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>序号</th>
+<th>规则要点</th>
+<th>做错会怎样</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>records 不是列表 → 抛 ValueError；不是字典、缺少 sequence/valid、字段类型不符 → 跳过；只看这两个字段</td>
+<td>该抛的没抛，函数点直接错；该跳的没跳，脏数据进训练</td>
+</tr>
+<tr>
+<td>2</td>
+<td>删除 sequence 全部空白，处理后长度必须 2～12 且只含半角括号，否则跳过整条</td>
+<td>把 <code>(a)</code>、空串放进训练，或把合法串误杀</td>
+</tr>
+<tr>
+<td>3</td>
+<td>valid 去首尾空白转大写，只接受 YES/NO；input 为 <code>序列：</code>加规范化串，output 为 <code>[Valid]:</code>加标签</td>
+<td>标签大小写错、前缀冒号写错、答案少一个空格</td>
+</tr>
+<tr>
+<td>4</td>
+<td>按规范化后的 input 稳定去重；同 input 不同 output 抛 ValueError</td>
+<td>顺序被打乱、冲突标签被悄悄丢掉</td>
+</tr>
+<tr>
+<td>5</td>
+<td>返回列表；不打印；不扩增；不调模型/网络/文件；不判断合法性</td>
+<td>输出多了调试信息、数据被自己造出来、标签被函数改了</td>
+</tr>
+<tr>
+<td>6</td>
+<td>代码 ≤16KiB；只用纯函数定义、文档字符串和 json/re/collections；常量写在函数内</td>
+<td>函数点因为不合规被判错</td>
+</tr>
+</tbody>
+</table>
+<h2 id="327-1records">32.7　规则 1：records 必须是列表，脏记录要跳过<a class="headerlink" href="#327-1records" title="Permanent link">&para;</a></h2>
+<p>原文：<em>records 不是列表时，抛出 ValueError。按原始顺序处理；不是字典、缺少 sequence/valid 或字段类型不符合的记录，跳过。只读取这两个规定字段，其他字段忽略。</em></p>
+<p>这条规则有三个动作，注意它们<strong>不是同一种处理</strong>：</p>
+<ul>
+<li>
+<p><strong>抛异常</strong>：<code>records</code> 本身不是列表（比如传进来一个字符串、一个数字、<code>None</code>）→ 抛 <code>ValueError</code>。这是"整批输入不可用"，要立刻报错。</p>
+</li>
+<li>
+<p><strong>跳过</strong>：列表里<strong>某一条</strong>有问题 → 安静地跳过它，继续处理后面的。包括：这一项不是字典（例如公开点 P02 里的 <code>null</code>）、缺少 <code>sequence</code> 或 <code>valid</code>、字段存在但不是字符串（比如 <code>valid</code> 是数字 1，或 <code>sequence</code> 是 <code>None</code>）。</p>
+</li>
+<li>
+<p><strong>忽略</strong>：记录里除了这两个字段还有别的键 → 完全不管，不读、不抄、不报错。</p>
+</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">坑</p>
+<p>公开函数测试点 P02 的第一项就是 null。它在 JSON 里表示"空"，在 Python 里是 None。它既不是字典，也不是字符。很多同学写 record.get("sequence") 之前忘了判断类型，程序直接崩，这一整点 10 分就没了。正确姿势是先 isinstance(record, dict) 再取值。isinstance 是 Python 内置函数，用来问"这个东西是不是某种类型"。</p>
+</div>
+<h2 id="328-2-212">32.8　规则 2：删空白、长度 2～12、只允许半角括号<a class="headerlink" href="#328-2-212" title="Permanent link">&para;</a></h2>
+<p>原文：<em>删除 sequence 中的全部空白字符。处理后长度必须为 2 至 12，而且只能包含半角 ( 和 )，否则跳过整条记录。这里只做字符和长度检查，不判断括号是否合法。</em></p>
+<p>三个细节必须抠清楚：</p>
+<ul>
+<li>
+<p><strong>"全部"空白，不是"首尾"空白。</strong> <code>( )(())</code> 要变成 <code>()(())</code>，中间的空白也要删。<code>( ( ) )</code> 要变成 <code>(())</code>。空白包括半角空格、制表符、换行符，以及全角空格 <code></code>。用正则 <code>re.sub(r"\s+", "", sequence)</code> 一次搞定。</p>
+</li>
+<li>
+<p><strong>长度是"删除空白之后"的长度</strong>，不是原始长度。<code>( ( ) )</code> 原始长度 9，删完长度 4，在范围内，应该保留。</p>
+</li>
+<li>
+<p><strong>"只做字符和长度检查"</strong>：<code>)()(</code> 字符合法、长度 4 合法，所以它<strong>要被保留</strong>。函数不许因为"它不合法"就把它删掉——它的标签是 NO，正好是训练要的反例。同理 <code>((((</code> 也要保留。</p>
+</li>
+</ul>
+<div class="admonition info">
+<p class="admonition-title">必背</p>
+<p>这一章最容易混的两个词：格式合法（格式检查）指"长度 2～12 且只有半角括号"；序列合法（逻辑判断）指"过程条件 + 结束条件都满足"。process_data 只管第一个，绝不许管第二个。</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">技巧</p>
+<p>用一条正则同时管长度和字符：^[()]{2,12}$。它要求整串从开头到结尾由 2 到 12 个 ( 或 ) 组成，多一个字符都不行。写正则时记住 {2,12} 里的数字是闭区间，长度 2 和长度 12 都算合格。</p>
+</div>
+<h2 id="329-3valid-inputoutput">32.9　规则 3：valid 归一化与 input/output 的精确拼接<a class="headerlink" href="#329-3valid-inputoutput" title="Permanent link">&para;</a></h2>
+<p>原文：<em>valid 去掉首尾空白并转为大写，只接受 YES 或 NO；否则跳过整条记录。input 为"序列："加规范化后的括号串；output 为"[Valid]: "加已有标签。</em></p>
+<p>这里要区分两种不同的空白处理，它们是故意的：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>空白怎么处理</th>
+<th>为什么不一样</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sequence</code></td>
+<td>删除<strong>全部</strong>空白</td>
+<td>括号串里的空格是录入噪音，删掉才能统一比对</td>
+</tr>
+<tr>
+<td><code>valid</code></td>
+<td>只去掉<strong>首尾</strong>空白</td>
+<td>标签本身不该有内部空格；去首尾是为了容忍 <code>" yes "</code> 这种写法</td>
+</tr>
+</tbody>
+</table>
+<p>转大写是为了容忍 <code>"yes"</code>、<code>"Yes"</code>、<code>" no "</code> 这些手写变体。但容忍是有限的：转完大写之后，必须<strong>正好等于</strong> <code>"YES"</code> 或 <code>"NO"</code>。所以公开点 P02 里 <code>"MAYBE"</code> 会被跳过——它不是 YES 也不是 NO。</p>
+<div class="admonition warning">
+<p class="admonition-title">坑</p>
+<p>拼接 input 和 output 时最容易出三个错：一是前缀里的冒号打成半角（题目要全角 ：）；二是 output 里冒号后忘了那个半角空格（题目要 [Valid]:  带一个空格）；三是在输出里用 label.upper() 之外还要加引号或括号。正确结果长这样：{"input": "序列：()(())", "output": "[Valid]: YES"}。建议把这两段前缀作为常量写在函数内部（规则 6 也要求常量写在函数内），只写一次，避免两处不一致。</p>
+</div>
+<h2 id="3210-4-input">32.10　规则 4：按规范化后的 input 稳定去重，冲突要抛错<a class="headerlink" href="#3210-4-input" title="Permanent link">&para;</a></h2>
+<p>原文：<em>按规范化后的 input 稳定去重。同一 input 和同一 output 只保留首次出现；同一 input 对应不同 output 时，抛出 ValueError，不能悄悄选一个标签。</em></p>
+<p>这句话里有三个关键字，都要抠：</p>
+<ul>
+<li>
+<p><strong>按规范化后的 input</strong>：判断两条记录是不是"重复"，看的是清洗之后的 <code>input</code>，不是原始 <code>sequence</code>。所以 <code>" ( ( ) ) "</code> 和 <code>"(())"</code> 会被认定成同一条，后者被丢掉。这正是公开点 P02 的情况。</p>
+</li>
+<li>
+<p><strong>稳定</strong>：稳定去重的意思是"保留首次出现的那一条，并且保住所有记录原有的先后顺序"。所以不能用集合（<code>set</code>）来去重——集合会把顺序打乱。要用能记住插入顺序的字典，比如 <code>collections.OrderedDict</code>，或者直接用 Python 3.7 之后本来就保序的普通字典。</p>
+</li>
+<li>
+<p><strong>冲突抛 ValueError</strong>：同一个 input，第一次标签是 YES，第二次标签是 NO——这时<strong>不许</strong>挑一个留下，而要抛 <code>ValueError</code>。因为这说明"你的标签自相矛盾"，函数没法替你决定谁对。注意：同一 input 同一 output 只是普通重复，跳过即可，不抛错。</p>
+</li>
+</ul>
+<div class="admonition question">
+<p class="admonition-title">考试怎么考</p>
+<p>去重是 P02 拿分的关键。P02 期望只返回一条，就是因为 " ( ( ) ) " 和 "(())" 规范化之后是同一个 input。如果你只按原始字符串去重，会返回两条，这个点就错了。同时，顺序也在评分范围内：返回列表要按原始顺序排列，一条都不能错位。</p>
+</div>
+<h2 id="3211-5">32.11　规则 5：只清洗，不判断，不打印，不扩增<a class="headerlink" href="#3211-5" title="Permanent link">&para;</a></h2>
+<p>原文：<em>返回列表，不打印答案，不扩增数据。不调用模型、网络或外部服务，不读取文件或评测数据，不用匹配算法补写标签。</em></p>
+<p>这条规则是整道题的"心理测试"：它逼你放弃"顺手帮模型判断一下合法性"的冲动。逐条翻译成人话：</p>
+<table>
+<thead>
+<tr>
+<th>禁止事项</th>
+<th>为什么被禁止</th>
+<th>违规后果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>判断合法性、改标签</td>
+<td>标签是要考你的部分；函数替你判，等于作弊</td>
+<td>函数点判错，数据标签也不再是你自己的</td>
+</tr>
+<tr>
+<td>补写标签、用匹配算法猜</td>
+<td>同上，且会引入不可控的错标</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>扩增数据（自动造新样本）</td>
+<td>数据构造是你的任务，函数只负责整理</td>
+<td>处理后条数可能超过 100，训练前报错</td>
+</tr>
+<tr>
+<td>打印输出</td>
+<td>评测程序按返回值判断，打印会污染输出</td>
+<td>轻则日志混乱，重则判错</td>
+</tr>
+<tr>
+<td>读文件、读评测数据、联网、调模型</td>
+<td>评测环境不保证可用，也属于作弊</td>
+<td>直接违规</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">坑</p>
+<p>调试时顺手写的 print 最容易忘删。养成习惯：提交前在文件里搜一遍 print，确保一个都没有。同理，函数必须 return 一个列表，不是打印、也不是返回字典。</p>
+</div>
+<h2 id="3212-6-16kib">32.12　规则 6：纯函数、允许的标准库、常量位置与 16KiB 上限<a class="headerlink" href="#3212-6-16kib" title="Permanent link">&para;</a></h2>
+<p>原文：<em>函数代码最多 16KiB，只使用纯函数定义、文档字符串及 json、re、collections 标准库；常量写在函数内。</em></p>
+<p>逐项解释：</p>
+<ul>
+<li>
+<p><strong>纯函数定义</strong>：文件里主要是 <code>def</code> 出来的函数（本例就是 <code>process_data</code>），加上必要的 <code>import</code>。不要写顶层执行的代码、不要写类和全局变量。</p>
+</li>
+<li>
+<p><strong>文档字符串</strong>：函数里那对三引号包起来的说明文字是允许的，写清楚用途是好习惯。</p>
+</li>
+<li>
+<p><strong>只允许 json、re、collections 三个标准库</strong>：不要 <code>import os</code>、<code>import sys</code>、<code>import random</code>，更不要第三方库。本题其实只需要 <code>re</code>（删空白、校验格式）和 <code>collections</code>（稳定去重用的 <code>OrderedDict</code>）；<code>json</code> 在允许清单里，但这个函数用不到。如果打算手动读 <code>train.jsonl</code>，那是 <strong>NO</strong>，规则 5 明确禁止读文件。</p>
+</li>
+<li>
+<p><strong>常量写在函数内</strong>：像 <code>"序列："</code>、<code>"[Valid]: "</code>、<code>r"^[()]{2,12}$"</code> 这类常量，定义在函数体里面，不要提到模块顶层。</p>
+</li>
+<li>
+<p><strong>代码最多 16KiB</strong>：这是文件体积上限，不是行数。本题实现大概三十行，远低于上限；但如果你复制了一堆无用代码或超长注释，也要留意。</p>
+</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">技巧</p>
+<p>把"允许的清单"当白名单来用：写每一行之前问一句"这行是纯函数定义、文档字符串，还是 json/re/collections？"如果都不是，就别写。这套自查能让你避开绝大多数函数点的失分。</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">本章要记住的 6 件事</p>
+<ul>
+<li>不是列表抛 <code>ValueError</code>；列表里的坏记录（非字典、缺字段、类型不符）跳过；其他字段忽略。</li>
+<li><code>sequence</code> 删<strong>全部</strong>空白，长度必须 2～12 且只含半角括号，否则跳过；这里不判断括号是否合法。</li>
+<li><code>valid</code> 只去<strong>首尾</strong>空白并转大写，只接受 YES/NO；<code>input = "序列：" + 规范化串</code>，<code>output = "[Valid]: " + 标签</code>（全角冒号、半角冒号加一个空格）。</li>
+<li>按 <code>input</code> 稳定去重：同 input 同 output 保留首次出现；同 input 不同 output 抛 <code>ValueError</code>。</li>
+<li>返回列表，不打印、不扩增、不判断合法性、不读文件不联网。</li>
+<li>代码 ≤16KiB，只用纯函数、文档字符串和 json/re/collections，常量写在函数内。</li>
+</ul>
+</div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.indexes", "content.code.copy", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

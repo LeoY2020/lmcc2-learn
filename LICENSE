@@ -1,0 +1,45 @@
+# 许可协议 / License
+
+本作品《LMCC 第二轮复习手册》（含站点文字与图示，以下简称"本作品"）中**由作者原创的内容**——
+章节讲解、学习路径设计、习题与解析、模板、图表、站点组织——采用：
+
+**Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International（CC BY-NC-SA 4.0）**
+
+## 你可以
+
+- **共享**：以任何媒介或格式复制、发行本作品；
+- **演绎**：修改、转换或以本作品为基础进行创作。
+
+## 惟须遵守
+
+- **署名（BY）**：注明原作者（leoy2020）与来源链接；
+- **非商业性使用（NC）**：不得将本作品用于商业目的；
+- **相同方式共享（SA）**：若你修改、转换或以本作品为基础创作，必须以相同许可协议分发你的贡献；
+- **无额外限制**：不得使用法律条款或技术措施，限制他人依本协议使用本作品的权利。
+
+许可协议全文（简体中文）：https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.zh-hans
+许可协议摘要（简体中文）：https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans
+
+## 不在本许可范围内的内容
+
+本作品引用、摘编或改编了 **LMCC 官方材料**（题目、评分规则、作答指南、参考代码）与
+**Google、GitHub、Hugging Face 的官方文档**，并包含若干开源软件与主题资源。这些部分**不是作者的原创内容，
+不属于上述 CC 许可的授权范围**，其著作权与许可归各自权利人所有，逐条说明见
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。
+
+其中 LMCC 官方题目、评分规则与参考代码版权归 LMCC 官方所有，本作品仅在个人学习范围内引用，
+并保留原文中的来源说明。
+
+## 关于软件与工具
+
+本站点由 MkDocs 与 Material for MkDocs 构建，其附带资源遵循各自的开源许可（见第三方清单）。
+用于生成本书的本地脚本（如 build.py、sync_chapter.py、模板与样式）如单独分发，可采用 MIT 许可。
+
+## 免责声明
+
+本作品为个人复习整理，**不是官方教材**，不保证与最新考试规则完全一致；使用时请以官方题面为准。
+本文件不构成法律意见。
+
+---
+
+Copyright (c) 2026 leoy2020 · 原创内容采用 CC BY-NC-SA 4.0 · 第三方材料见 THIRD-PARTY-NOTICES.md

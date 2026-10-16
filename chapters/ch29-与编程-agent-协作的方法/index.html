@@ -1,0 +1,3103 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="2026 LMCC 第二轮三题（Prompt 调优 / LoRA 数据 / Vibe Coding）复习手册">
+      
+      
+      
+      
+        <link rel="prev" href="../ch28-%E6%96%87%E6%9C%AC%E5%90%91%E9%87%8F%E4%B8%8E%E8%AF%AD%E4%B9%89%E7%9B%B8%E4%BC%BC%E5%BA%A6/">
+      
+      
+        <link rel="next" href="../ch30-token-%E9%A2%84%E7%AE%97%E4%B8%8E%E5%B7%A5%E7%A8%8B%E6%88%90%E6%9C%AC%E7%AE%A1%E7%90%86/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>第 29 章 与编程 Agent 协作的方法 - LMCC 第二轮通关手册</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#29-agent" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="LMCC 第二轮通关手册" class="md-header__button md-logo" aria-label="LMCC 第二轮通关手册" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LMCC 第二轮通关手册
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              第 29 章 与编程 Agent 协作的方法
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="切换到深色"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="切换到深色" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="切换到浅色"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="切换到浅色" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="LMCC 第二轮通关手册" class="md-nav__button md-logo" aria-label="LMCC 第二轮通关手册" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LMCC 第二轮通关手册
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    首页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../course-description/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    课程说明
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch01-%E8%80%83%E8%AF%95%E5%BD%A2%E5%BC%8F%E4%B8%8E%E8%AF%84%E5%88%86%E6%9C%BA%E5%88%B6/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第一部分考试与工具
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第一部分考试与工具
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch02-%E4%B8%8A%E6%9C%BA%E7%8E%AF%E5%A2%83%E4%B8%8E%E5%B7%A5%E5%85%B7%E9%93%BE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 2 章 上机环境与工具链
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch03-%E4%BD%9C%E7%AD%94%E7%BA%AA%E5%BE%8B%E4%B8%8E%E4%BA%A4%E4%BB%98%E8%A6%81%E6%B1%82/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 3 章 作答纪律与交付要求
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch04-python-%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第二部分Python 程序设计
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第二部分Python 程序设计
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch05-%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B8%8E%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 5 章 字符串与文本处理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch06-%E5%88%97%E8%A1%A8-%E5%85%83%E7%BB%84-%E9%9B%86%E5%90%88-%E5%AD%97%E5%85%B8%E4%B8%8E%E6%8E%A8%E5%AF%BC%E5%BC%8F/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 6 章 列表、元组、集合、字典与推导式
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch07-%E6%8E%A7%E5%88%B6%E6%B5%81%E4%B8%8E%E5%87%BD%E6%95%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 7 章 控制流与函数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch08-%E6%A8%A1%E5%9D%97-%E6%96%87%E4%BB%B6%E4%B8%8E-json/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 8 章 模块、文件与 JSON
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch09-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E4%B8%8E%E7%A8%8B%E5%BA%8F%E8%B0%83%E8%AF%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 9 章 正则表达式与程序调试
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch10-%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第三部分大语言模型与提示词工程
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第三部分大语言模型与提示词工程
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch11-%E5%AF%B9%E8%AF%9D%E7%BB%93%E6%9E%84-%E6%A8%A1%E6%9D%BF%E4%B8%8E%E6%8E%A8%E7%90%86%E6%A8%A1%E5%BC%8F/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 11 章 对话结构、模板与推理模式
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch12-%E6%8F%90%E7%A4%BA%E8%AF%8D%E7%9A%84%E7%BB%93%E6%9E%84%E4%B8%8E%E5%86%99%E6%B3%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 12 章 提示词的结构与写法
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch13-%E4%BB%BB%E5%8A%A1%E8%A7%84%E5%88%99%E7%9A%84%E8%A7%A3%E6%9E%90%E4%B8%8E%E8%A1%A8%E8%BE%BE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 13 章 任务规则的解析与表达
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch14-%E8%BE%93%E5%87%BA%E6%A0%BC%E5%BC%8F%E7%BA%A6%E6%9D%9F/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 14 章 输出格式约束
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch15-%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%B3%A8%E5%85%A5%E4%B8%8E%E8%BE%B9%E7%95%8C%E6%9D%A1%E4%BB%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 15 章 提示词注入与边界条件
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch16-%E6%8F%90%E7%A4%BA%E8%AF%8D%E8%BF%AD%E4%BB%A3%E4%B8%8E%E9%A2%84%E7%AE%97%E7%AE%A1%E7%90%86/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 16 章 提示词迭代与预算管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch17-%E4%BB%8E%E8%A7%84%E6%A0%BC%E5%88%B0%E7%A8%8B%E5%BA%8F%E9%80%BB%E8%BE%91/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第四部分数据清洗与函数实现
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第四部分数据清洗与函数实现
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch18-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E6%A0%A1%E9%AA%8C%E4%B8%8E%E5%AE%89%E5%85%A8%E5%8F%96%E5%80%BC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 18 章 数据类型校验与安全取值
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch19-%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%B8%85%E6%B4%97%E4%B8%8E%E8%A7%84%E8%8C%83%E5%8C%96/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 19 章 字符串清洗与规范化
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch20-%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97%E5%87%BD%E6%95%B0%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%8E%E6%B5%8B%E8%AF%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 20 章 数据清洗函数的实现与测试
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch21-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E4%B8%8E%E8%AE%AD%E7%BB%83%E6%B5%81%E7%A8%8B/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第五部分机器学习与参数高效微调
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第五部分机器学习与参数高效微调
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch22-%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E6%9E%84%E9%80%A0%E4%B8%8E%E6%A0%87%E7%AD%BE%E8%B4%A8%E9%87%8F/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 22 章 训练数据构造与标签质量
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch23-%E5%8F%82%E6%95%B0%E9%AB%98%E6%95%88%E5%BE%AE%E8%B0%83-lora-%E4%B8%8E%E8%AE%AD%E7%BB%83%E5%8F%82%E6%95%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 23 章 参数高效微调（LoRA）与训练参数
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch24-%E6%A8%A1%E5%9E%8B-%E5%88%86%E8%AF%8D%E5%99%A8%E4%B8%8E%E6%8E%A8%E7%90%86%E6%B5%81%E7%A8%8B/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第六部分模型、推理与语义检索
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第六部分模型、推理与语义检索
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch25-%E5%88%86%E8%AF%8D%E5%99%A8%E4%B8%8E%E5%BA%8F%E5%88%97%E5%A4%84%E7%90%86/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 25 章 分词器与序列处理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch26-%E5%AF%B9%E8%AF%9D%E6%A8%A1%E6%9D%BF%E7%9A%84%E5%AE%9E%E7%8E%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 26 章 对话模板的实现
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch27-%E7%94%9F%E6%88%90%E5%8F%82%E6%95%B0%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 27 章 生成参数的实现细节
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch28-%E6%96%87%E6%9C%AC%E5%90%91%E9%87%8F%E4%B8%8E%E8%AF%AD%E4%B9%89%E7%9B%B8%E4%BC%BC%E5%BA%A6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 28 章 文本向量与语义相似度
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="./" class="md-nav__link md-nav__link--active">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第七部分工程实践与人机协作
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link md-nav__link--active" for="__nav_9" id="__nav_9_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第七部分工程实践与人机协作
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch30-token-%E9%A2%84%E7%AE%97%E4%B8%8E%E5%B7%A5%E7%A8%8B%E6%88%90%E6%9C%AC%E7%AE%A1%E7%90%86/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 30 章 Token 预算与工程成本管理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch31-%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6%E4%B8%8E%E5%AE%9E%E9%AA%8C%E8%AE%B0%E5%BD%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 31 章 版本控制与实验记录
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../ch32-%E6%A1%88%E4%BE%8B%E4%B8%80-%E6%8B%AC%E5%8F%B7%E5%BA%8F%E5%88%97%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第八部分应用案例与应试
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    第八部分应用案例与应试
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch33-%E6%A1%88%E4%BE%8B%E4%BA%8C-todomvc-%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 33 章 案例二：TodoMVC 功能实现
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch34-%E5%A4%87%E8%80%83%E8%AE%A1%E5%88%92%E4%B8%8E%E8%80%83%E5%9C%BA%E7%AD%96%E7%95%A5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 34 章 备考计划与考场策略
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch35-%E6%A8%A1%E6%9D%BF%E5%BA%93/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 35 章 模板库
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch36-%E7%BB%BC%E5%90%88%E7%BB%83%E4%B9%A0-%E5%90%AB%E7%AD%94%E6%A1%88/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 36 章 综合练习（含答案）
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ch37-%E9%80%9F%E6%9F%A5%E8%A1%A8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    第 37 章 速查表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../apA-%E9%99%84%E5%BD%95-a-2026-%E4%B8%89%E9%A2%98%E8%A7%84%E6%A0%BC%E9%80%9F%E6%9F%A5/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录规格速查与术语手册
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    附录规格速查与术语手册
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../apB-%E9%99%84%E5%BD%95-b-%E6%9C%AF%E8%AF%AD%E8%A1%A8%E4%B8%8E%E6%8A%A5%E9%94%99%E5%AF%B9%E7%85%A7%E8%A1%A8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    附录 B 术语表与报错对照表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../learning-graph/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    学习图谱
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_12" id="__nav_12_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    学习图谱
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learning-graph/list-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概念清单
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learning-graph/quality-metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    质量指标
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../learning-graph/taxonomy-distribution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    分类分布
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    术语表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quiz/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    自测练习
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    常见问题
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../sims/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    交互模拟
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_16" id="__nav_16_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    交互模拟
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sims/bracket-validator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    括号序列判定
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sims/token-budget/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Token 预算计算器
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    关于本书
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    资料来源
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#291" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        29.1 一次只改一件事：把八条要求排成任务队列
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#292" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        29.2 用「操作 → 预期」的句式下指令
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="29.2 用「操作 → 预期」的句式下指令">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        指令 1：行内科目只改这一条
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        指令 2：新作业一律未分类
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        指令 3：联合筛选同时生效
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        指令 4：移动只与当前可见的相邻项交换
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-disabled" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        指令 5：边界按钮用原生 disabled
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        指令 6：任何改变可见集合的操作后都重算按钮状态
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        指令 7：刷新持久化
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        指令 8：剩余数与清理看全清单
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#293-abcd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        29.3 用例子纠正：从 A、B、C、D 学会「交换的是全清单位置」
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#294-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        29.4 让 Agent 自查，而不是自己动手
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#295" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        29.5 迭代纪律：先跑通基础功能，再处理边界
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#296" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        29.6 禁止事项：六件绝对不能做的事
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="29.6 禁止事项：六件绝对不能做的事">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        禁区一：不要让 Agent 重写整个项目
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        禁区二：不要改题面、测试和启动脚本
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        禁区三：不要联网
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        禁区四：不要用「贴长日志」的方式沟通
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        禁区五：不要要求与得分无关的功能
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        禁区六：不要在快没时间时开始「大改造」
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#297" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        29.7 第三题的对话方法：三条官方原则的落地写法
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#298" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        29.8 可直接使用的第三题指令骨架
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="29-agent">第 29 章 与编程 Agent 协作的方法<a class="headerlink" href="#29-agent" title="Permanent link">&para;</a></h1>
+<div class="admonition info">
+<p class="admonition-title">本章目标</p>
+<p>学完这一章，你能：① 把八条要求排成一张有先后、可验收的任务队列；② 用「操作 → 预期」的句式写出 Agent 一听就懂的指令；③ 用官方那个 A、B、C、D 的例子检验移动功能；④ 让 Agent 自查而不是自己动手；⑤ 背下六条禁止事项。</p>
+</div>
+<p>前两章把「要做什么」讲完了，这一章讲「怎么让 Agent 真正做到」。这里有一个观念要先转过来：<strong>跟 Agent 对话不是聊天，是下发工单</strong>。合格的工单有三个特征：说的是<strong>可观察的行为</strong>，给出的是<strong>可复现的验收步骤</strong>，一次只包含<strong>一件事</strong>。</p>
+<h2 id="291">29.1　一次只改一件事：把八条要求排成任务队列<a class="headerlink" href="#291" title="Permanent link">&para;</a></h2>
+<p>为什么强调「一次只改一件事」？三个很现实的原因：<strong>① 出错定位快</strong>（一条指令塞五件事，改完不对你不知道是哪件引起的）；<strong>② 验收标准清楚</strong>（一件事对应一组「操作 → 预期」，你一眼就能核对）；<strong>③ 省 Token</strong>（Agent 改得少、输出短，不用因为「又改坏了」而整轮重来）。</p>
+<p>下面是一条推荐的开工顺序，把八条要求拆成 9 条工单。顺序遵循一个原则：<strong>先做能立刻看见效果的基础功能，再做依赖它们的边界规则，最后做持久化和整齐化。</strong> 抄在纸上，每完成一条打个勾。</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>工单</th>
+<th>对应要求</th>
+<th>做完后怎么验收</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T1</td>
+<td>数据结构与渲染基线：每条作业用唯一 data-id，标题放 label，全清单数组渲染成 .todo-list 里的 li；保留所有既有选择器</td>
+<td>要求 1、5（基础）</td>
+<td>添加三条、删除一条、勾选一条，功能都正常</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>行内科目下拉框（select.task-subject）：显示当前科目，改它只改这一条</td>
+<td>要求 2、3</td>
+<td>改第 2 行科目，第 1 行与同名另一条都不变</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>顶部科目筛选（select#subject-filter）：all / unassigned / chinese / math / english</td>
+<td>要求 4</td>
+<td>切「数学」只显示数学作业，切回全部顺序不变</td>
+</tr>
+<tr>
+<td>T4</td>
+<td>顶部科目筛选与完成筛选联合生效</td>
+<td>要求 4</td>
+<td>「数学 + 未完成」只显示未完成的数学作业</td>
+</tr>
+<tr>
+<td>T5</td>
+<td>上移 / 下移：只与当前可见的相邻项交换，交换的是全清单位置</td>
+<td>要求 5</td>
+<td>用 A、B、C、D 例子核对全清单顺序</td>
+</tr>
+<tr>
+<td>T6</td>
+<td>按钮边界：可见第一条上移禁用、最后一条下移禁用、只剩一条都禁用；用原生 disabled</td>
+<td>要求 6</td>
+<td>每步操作后检查每条可见行的两个按钮</td>
+</tr>
+<tr>
+<td>T7</td>
+<td>刷新持久化：整份全清单写入 localStorage，加载时读回并渲染</td>
+<td>要求 7</td>
+<td>刷新后标题、完成、科目、顺序都在</td>
+</tr>
+<tr>
+<td>T8</td>
+<td>新作业规则复核：未分类、未完成、追加末尾，空标题不加</td>
+<td>要求 2、1</td>
+<td>在数学视图下添加，切回全部看它在末尾且为未分类</td>
+</tr>
+<tr>
+<td>T9</td>
+<td>清理核对：剩余数看全清单、清理已完成删全清单已完成条目</td>
+<td>要求 1</td>
+<td>在筛选视图下点清理，切回全部看结果</td>
+</tr>
+</tbody>
+</table>
+<p>这张队列还有个隐藏好处：T1 必须最先做，因为它是所有功能的地基；T7 放在比较靠后，因为它<strong>依赖数据已经有 subject 字段</strong>，科目功能没做之前做持久化会白做一遍。</p>
+<div class="admonition tip">
+<p class="admonition-title">技巧</p>
+<p>第一次对话建议把「不许动的东西」和「第一件要做的事」合并成一条消息，一轮就立好地基和护栏：「请先不要改功能，只做一件事：确认每条作业有唯一 data-id、标题在行内 label 中、并且 .todo-list 的直接子元素就是 li。另外请保留 .new-todo、.toggle、.destroy、.clear-completed、.todo-count strong、.filters a 这些既有选择器，不要改名，也不要增加中间层。」</p>
+</div>
+<h2 id="292">29.2　用「操作 → 预期」的句式下指令<a class="headerlink" href="#292" title="Permanent link">&para;</a></h2>
+<p>Agent 不看你脑子里的画面，它只看你打出来的字。最有效的指令句式是固定的三拍：<strong>① 前提（在什么状态下）→ ② 操作（点哪、改什么、选什么）→ ③ 预期（页面上应该出现什么）</strong>。缺了第三拍，Agent 就只能靠猜。下面这八条可以直接抄进对话框（按需改写标题和科目）。</p>
+<h3 id="1">指令 1：行内科目只改这一条<a class="headerlink" href="#1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>请实现行内科目下拉框 select.task-subject。
+操作：输入「朗读」按 Enter，再输入一次「朗读」按 Enter，出现两条同名作业；
+把第 2 行的科目改成数学。
+预期：两条作业仍然存在，第 1 行科目仍是未分类，第 2 行变成数学；
+标题、完成状态、两条在全清单里的顺序都不变。
+</code></pre></div>
+<p>关键在<strong>「两条同名作业」</strong>这个前提。它逼着 Agent 用 data-id 定位，而不是用标题定位，把最容易踩的坑提前摆到台面上。</p>
+<h3 id="2">指令 2：新作业一律未分类<a class="headerlink" href="#2" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>请确认新作业的默认值。
+操作：把顶部科目筛选设为「数学」，然后输入「听写」按 Enter。
+预期：当前视图里不出现「听写」（因为它是不符合筛选的未分类）；
+把科目筛选切回「全部科目」后，「听写」出现在全清单末尾，科目为未分类、未完成。
+</code></pre></div>
+<p>注意它把「看不见」也写成了预期。这正是要求二的难点：新作业不会因为你在看数学就变成数学。<strong>把「看不见」写进预期，Agent 才不会自作聪明地替你归成数学</strong>。</p>
+<h3 id="3">指令 3：联合筛选同时生效<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>请让科目筛选与完成筛选同时生效。
+操作：添加「预习语文」「数学订正」「英语阅读」三条，
+把第 1 条设为数学、第 2 条设为英语、第 3 条设为数学，再勾选第 2 条。
+预期：科目选「数学」时只显示「预习语文」和「英语阅读」两条；
+此时再把完成筛选设为「已完成」，视图应为空（数学里没有已完成的）；
+把完成筛选改回「全部」，两条数学作业重新出现，且顺序不变。
+</code></pre></div>
+<p>这条指令故意让「数学 + 已完成」的结果为空。空列表最容易被忽略，用一条预期把它提前暴露出来，省掉后面很多轮返工。</p>
+<h3 id="4">指令 4：移动只与当前可见的相邻项交换<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>请实现上移 / 下移，注意交换的是全清单里的位置。
+操作：添加 A、B、C、D 四条，把 A 设为数学、B 设为英语、C 设为数学、D 保持未分类；
+科目筛选选「数学」（可见 A、C），点 C 的上移。
+预期：数学视图变成 C、A；把科目筛选切回「全部科目」，全清单应变成 C、B、A、D。
+也就是 B 和 D 的位置一动不动，A 和 C 互换。
+</code></pre></div>
+<p>这条就是题面给的官方例子。它同时给出<strong>中间状态（数学视图）</strong>和<strong>最终状态（全清单）</strong>两种预期，让 Agent 没有含糊的空间。</p>
+<h3 id="5-disabled">指令 5：边界按钮用原生 disabled<a class="headerlink" href="#5-disabled" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>请实现移动按钮的边界禁用。
+操作：添加「第一项」「第二项」「第三项」三条。
+预期：第 1 行的上移按钮是 disabled，第 3 行的下移按钮是 disabled，
+第 2 行两个按钮都可用；删除到只剩一条时，这一条的两个按钮都 disabled。
+要求：用按钮的 disabled 属性，不要只是变灰；禁用时按钮仍然显示在行内。
+</code></pre></div>
+<p>最后一句非常重要。<strong>「变灰」和「disabled」不是一回事</strong>。把要求写进指令，等于提前堵住这个错。</p>
+<h3 id="6">指令 6：任何改变可见集合的操作后都重算按钮状态<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>请检查按钮状态是否每次都会重算。
+操作：添加三条作业，然后删除第 2 条。
+预期：剩下的两条里，新的最后一条（原来的第 3 条）下移按钮变成 disabled；
+再切换一次科目筛选，可见行的第一条上移 disabled、最后一条下移 disabled。
+</code></pre></div>
+<p>这条专门给<strong>「只在初始化时算一次」</strong>这种错准备：它把「删除之后」和「切换筛选之后」两个时机都点出来，逼 Agent 把重算写进渲染流程。</p>
+<h3 id="7">指令 7：刷新持久化<a class="headerlink" href="#7" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>请用 localStorage 实现刷新恢复，只存整份全清单。
+操作：添加「代数」（设为数学）、「听写」（未分类）、「课文」（设为英语）三条，
+勾选「听写」，然后把「课文」上移一次；刷新页面。
+预期：刷新后三条的顺序、科目、完成状态与刷新前完全一致，条数不多不少；
+再添加一条「新作业」，它应出现在全清单最后且为未分类。
+要求：不使用网络，不保存筛选状态也没关系（恢复为全部即可）。
+</code></pre></div>
+<p>「条数不多不少」这句专门防「刷新后条目翻倍」。最后一句主动说明「不保存筛选也没关系」，避免 Agent 花时间去持久化不必要的东西。</p>
+<h3 id="8">指令 8：剩余数与清理看全清单<a class="headerlink" href="#8" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>请确认剩余数和清理都基于全清单。
+操作：添加「预习语文」（数学）、「数学订正」（英语）、「英语阅读」（数学），勾选「数学订正」。
+预期：无论科目筛选和完成筛选怎么切，剩余数始终显示 2；
+在「数学」筛选下点击「清理已完成」，切回全部科目后，被删掉的是全清单里已完成的「数学订正」，
+并且当前筛选下的可见作业不受影响。
+</code></pre></div>
+<p>「无论怎么切」这个措辞把<strong>剩余数与筛选无关</strong>讲透了，同时又明确了清理的删除集合是「全清单里的已完成条目」，还把 P02-1 第 12 步那种「筛选视图下点清理」的场景提前验一遍。</p>
+<div class="admonition tip">
+<p class="admonition-title">技巧</p>
+<p>八条指令有一个共同结构：前提 → 操作 → 预期。临场造新指令时照这个壳子填就行。拿不准写什么预期，就回到第 37 章那张速查表，抄一条公开点的预期文字，改写成你的数据。</p>
+</div>
+<ul>
+<li><strong>先跑通基础功能，再处理边界</strong> —— 具体怎么排，见 19.5。</li>
+<li><strong>让 Agent 自查，而不是自己动手</strong> —— 具体怎么问，见 19.4。</li>
+<li><strong>用例子纠正</strong> —— 具体怎么举，见 19.3。</li>
+</ul>
+<h2 id="293-abcd">29.3　用例子纠正：从 A、B、C、D 学会「交换的是全清单位置」<a class="headerlink" href="#293-abcd" title="Permanent link">&para;</a></h2>
+<p>跟 Agent 沟通时，例子比形容词有用一百倍。你说「移动逻辑不对」，Agent 只能猜；你说「点 C 的上移后，全清单应该变成 C、B、A、D，可现在不是」，Agent 立刻知道差在哪。<strong>题面给的那个例子，就是本题最重要的一块「标准试纸」</strong>。</p>
+<p>先把官方原文的例子完整摆一遍，每一步都写出理由：</p>
+<div class="highlight"><pre><span></span><code>起始全清单：A（数学）、B（英语）、C（数学）、D（未分类）
+
+第 1 步：科目筛选选「数学」
+  可见的是：A、C（B 是英语、D 是未分类，都不匹配）
+
+第 2 步：点 C 的「上移」
+  要找的对象 = C 在数学视图里的上一条 = A
+  要做的动作 = 把 A 和 C 在「全清单」里的位置互换
+  数学视图变成：C、A
+  全清单变成：C（数学）、B（英语）、A（数学）、D（未分类）
+  注意 B 和 D 的位置没变（还是第 2、第 4 位）
+
+第 3 步：再点一次 C 的「上移」
+  预期：没有变化，因为 C 已经是数学视图的第一条，上移按钮应当 disabled
+
+第 4 步：把当前可见的 C 改成英语
+  数学视图变成：只剩 A
+  全清单顺序不变：C（英语）、B（英语）、A（数学）、D（未分类）
+
+第 5 步：科目筛选切回「全部科目」
+  可见的是：C、B、A、D（顺序和第 2 步结束时一致）
+
+第 6 步：刷新页面
+  科目与这个顺序仍在（持久化生效）
+</code></pre></div>
+<p>请注意第 2 步里那句<strong>「数学视图变成 C、A」和「全清单变成 C、B、A、D」要同时成立</strong>。这两句话合起来才唯一确定了「怎么交换」。<strong>如果只检查数学视图，一个错误实现（在可见列表内部交换）也能蒙对。</strong> 所以验收时必须多走一步：切回「全部科目」再看一遍。</p>
+<p>第 4 步还揭示了另一条容易忽略的规则：把 C 改成英语后，它<strong>在全清单里的位置保持不变</strong>，只是不再符合「数学」筛选，所以从当前视图消失。很多人把「消失」误解成「移走」，那就错了。</p>
+<p>发现 Agent 做错了，最高效的纠正是把「预期」和「实际」并排写出来，再附上你观察到的路径。可以直接套这个模板：</p>
+<div class="highlight"><pre><span></span><code>我按你的实现试了一遍，结果不对，请按下面对照检查：
+
+操作：添加 A、B、C、D 四条；A 设为数学，B 设为英语，C 设为数学，D 保持未分类；
+科目筛选选「数学」（此时可见 A、C），点击 C 的上移。
+
+预期：数学视图变成 C、A；切回「全部科目」后全清单是 C、B、A、D。
+实际：数学视图变成了 C、A，但切回「全部科目」后全清单顺序不对。
+
+请检查 move-up 是不是把「可见列表里的相邻两条」在全清单里的下标做了交换，
+而不是只动了显示顺序；B 和 D 在全清单里的下标应该始终不变。
+</code></pre></div>
+<p>这条模板有三段：操作、预期、实际，最后附上你的猜测。<strong>附猜测这一步很关键</strong>——它不是让 Agent 照抄你的想法，而是把讨论迅速聚焦到嫌疑最大的那段逻辑上，省下它从头读一遍代码的 Token。</p>
+<div class="admonition question">
+<p class="admonition-title">考试怎么考</p>
+<p>公开点 P04-1 用的就是「隐藏条目夹在中间」的结构（计算A、英语B、计算C、未分D、计算E）。它的第 11～13 步连续三次移动，每一步之后都核对「所有移动按钮符合可见列表边界规则」，第 14 步再切回「全部科目」核对全清单。这说明平台判断移动的正确性，是可见顺序与全清单顺序一起看的。</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">坑</p>
+<p>用例子纠正时，别只说「顺序不对」。顺序不对有很多种可能：移动逻辑错了、渲染顺序错了、或者筛选时顺手重排了数组。把「预期顺序」和「实际顺序」都完整写出来（把四个字母都列出来），才能让差异自己说话。</p>
+</div>
+<h2 id="294-agent">29.4　让 Agent 自查，而不是自己动手<a class="headerlink" href="#294-agent" title="Permanent link">&para;</a></h2>
+<p>考试不许你动手改代码，所以「检查」也必须交给 Agent——但要检查得好，问法很重要。笼统地问「有没有问题」等于没问；<strong>把要检查的规则和要检查的位置一起说出来</strong>，才有效。下面六种问法可以直接抄。</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>可以直接抄的自查指令</th>
+<th>它在防什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>请检查 move-up 是否与当前可见的上一条交换，而不是与全清单里的上一条交换；并说明交换时是否连 data-id 一起换了位置。</td>
+<td>移动对象搞错；只交换标题不交换整条数据</td>
+</tr>
+<tr>
+<td>2</td>
+<td>请检查按钮的 disabled 是否每次渲染都按当前可见顺序重算，包括删除、勾选、改科目、切换筛选之后。</td>
+<td>只在初始化时算一次，之后不更新</td>
+</tr>
+<tr>
+<td>3</td>
+<td>请检查剩余数 .todo-count strong 是否只统计全清单中未完成的条目，与当前筛选无关。</td>
+<td>把剩余数算成可见未完成数</td>
+</tr>
+<tr>
+<td>4</td>
+<td>请检查保存的字段是否包含 id、title、subject、completed，并且按全清单顺序整体写入 localStorage；加载时是否只有一处读取并渲染。</td>
+<td>漏字段；恢复与内存双份导致条目翻倍</td>
+</tr>
+<tr>
+<td>5</td>
+<td>请检查行内科目下拉框的修改是否只更新 data-id 对应的那一条，改完后重新渲染并重算按钮状态。</td>
+<td>只改显示不改数据；影响同名条目</td>
+</tr>
+<tr>
+<td>6</td>
+<td>请检查 .todo-list 的直接子元素是否就是每条作业的 li、每行是否有唯一 data-id、标题是否在行内 label 中。</td>
+<td>加包装层导致平台找不到可见行</td>
+</tr>
+</tbody>
+</table>
+<p>这些问法的共同点：把<strong>规则原文</strong>（「与当前可见的上一条交换」「与筛选无关」「只更新对应那一条」）直接嵌进问题里。Agent 必须逐条对照，而不能含糊地回答「已检查，没问题」。</p>
+<p>Agent 会告诉你它改了什么、检查了什么，但它的自述<strong>不能当作最终结论</strong>。你仍然要回到页面预览里走一遍例子。判断报告可信度有个小技巧：看它有没有提到<strong>具体的函数名或文件</strong>。</p>
+<div class="highlight"><pre><span></span><code>含糊不可信：
+  「已修复移动逻辑，现在符合要求。」
+
+具体可用：
+  「已修改 src/app.js 里的 moveUp / moveDown 两个函数：
+   先用 computeVisible() 取当前可见数组，再用 indexOfId() 找到本条与相邻条在全清单里的下标，
+   用 swapInFullList() 交换这两个下标；交换的是完整的任务对象（含 id、title、subject、completed）。
+   同时 render() 里新增了按可见序号设置 disabled 的循环。」
+</code></pre></div>
+<p>第二种报告之所以可信，是因为它暴露了<strong>实现细节</strong>，你一看就知道它是不是按规则做的。反过来，如果 Agent 只说「已修复」「已按你的要求处理」，你就必须自己再验一遍。</p>
+<div class="admonition tip">
+<p class="admonition-title">技巧</p>
+<p>还有一个省钱的问法：「请只回答两个问题：① move-up 是在全清单数组上交换下标，还是在可见数组上交换？② 边界 disabled 是在 render 里统一设置的吗？不要贴完整代码。」 这种限定式提问能拿到关键信息，又不会让 Agent 输出一大段代码占用 Token。</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">坑</p>
+<p>不要问「你觉得还有哪里有问题」这种开放问题。Agent 很可能为了显得负责，主动去改一些没坏的地方，甚至重写整个文件——既费 Token 又可能引入新错误。要问就问具体的、封闭的、有明确答案的问题。</p>
+</div>
+<h2 id="295">29.5　迭代纪律：先跑通基础功能，再处理边界<a class="headerlink" href="#295" title="Permanent link">&para;</a></h2>
+<p>40 分钟听着不少，但对话是有来回的：你打一句、Agent 读代码改代码跑命令、再回你一句，一轮通常 1～3 分钟。算下来你大概只有 15～25 次真正有意义的交互。<strong>所以顺序比完美更重要。</strong> 纪律的核心是一句话：<strong>先把「主流程能跑」这条线打通，再加边界；不要为了一个边界卡住整条主流程。</strong> 主流程就是「添加 → 显示 → 改科目 → 筛选 → 移动 → 刷新后还在」这一整条链。</p>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>目标</th>
+<th>判断能不能进入下一阶段</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 1 阶段：地基</td>
+<td>每条作业有唯一 data-id、标题在行内 label 里、.todo-list 的直接子元素是 li</td>
+<td>添加三条、删除一条、勾选一条都正常</td>
+</tr>
+<tr>
+<td>第 2 阶段：科目与筛选</td>
+<td>行内科目可用；顶部科目筛选与完成筛选同时生效</td>
+<td>「数学 + 未完成」结果正确，切回全部顺序不变</td>
+</tr>
+<tr>
+<td>第 3 阶段：移动</td>
+<td>上移下移按「当前可见的相邻项」交换全清单位置</td>
+<td>A、B、C、D 例子在数学视图与全清单两边都对</td>
+</tr>
+<tr>
+<td>第 4 阶段：边界</td>
+<td>按钮边界、空列表、只剩一条、同名条目</td>
+<td>P03-2 那种逐步检查全部通过</td>
+</tr>
+<tr>
+<td>第 5 阶段：持久化</td>
+<td>刷新后标题、完成、科目、顺序都在</td>
+<td>刷新一次再添加一条，条数不多不少</td>
+</tr>
+<tr>
+<td>第 6 阶段：整体复核</td>
+<td>按第 37 章那张速查表过一遍八条要求</td>
+<td>每一条都能说出「我怎么验过它」</td>
+</tr>
+</tbody>
+</table>
+<p>每个阶段结束，都要在预览里按「操作 → 预期」走一遍。走通了再进下一阶段；走不通就先修这一个问题。<strong>绝对不要在没有验证第 2 阶段的情况下直接跳到第 5 阶段</strong>，因为后面的功能全都建立在前面的数据结构上，地基错了，上面全得返工。</p>
+<p>下面这张表就是「第 4 阶段」要逐条确认的东西，当成一张打卡清单用：</p>
+<table>
+<thead>
+<tr>
+<th>边界情况</th>
+<th>怎么造出来</th>
+<th>预期</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>空标题</td>
+<td>输入三个空格再按 Enter</td>
+<td>清单不变，不新增条目</td>
+</tr>
+<tr>
+<td>首尾空白</td>
+<td>输入两个空格 + 「数学练习」+ 两个空格</td>
+<td>标题存成「数学练习」，中间空格保留</td>
+</tr>
+<tr>
+<td>同名条目</td>
+<td>同一个标题输入两次</td>
+<td>两条独立；改一条的科目、勾选不影响另一条</td>
+</tr>
+<tr>
+<td>可见列表为空</td>
+<td>先切「已完成」再看</td>
+<td>页面没有行，但科目筛选仍可用</td>
+</tr>
+<tr>
+<td>只剩一条</td>
+<td>添加两条后删掉一条</td>
+<td>这一条的上移和下移都 disabled</td>
+</tr>
+<tr>
+<td>第一条 / 最后一条</td>
+<td>三条可见时检查</td>
+<td>第 0 条上移 disabled、最后一条下移 disabled，中间两个都可用</td>
+</tr>
+<tr>
+<td>切换筛选后的边界</td>
+<td>切一次科目筛选再检查按钮</td>
+<td>按新的可见顺序重算，边界正确</td>
+</tr>
+<tr>
+<td>改科目后消失</td>
+<td>在「数学」筛选下把唯一一条改成英语</td>
+<td>可见列表为空，且全清单里它还在</td>
+</tr>
+<tr>
+<td>筛选视图下清理</td>
+<td>筛到只剩一条未完成，点「清理已完成」</td>
+<td>被删的是全清单里已完成的条目，不只是可见的</td>
+</tr>
+<tr>
+<td>刷新后追加</td>
+<td>刷新后再添加一条</td>
+<td>追加到末尾，条数 = 原有 + 1，不重复</td>
+</tr>
+</tbody>
+</table>
+<p>这张清单里，前四条属于「要求一」和「要求二」，中间四条属于「要求六」，后两条在公开点 P02、P05 里各出现过一次。<strong>它们全都出现在公开点上</strong>，所以这不是「锦上添花的优化」，而是「必须拿到的分」。</p>
+<p>如果时间真的不够，取舍要有依据。判断依据是谁的分更容易拿到：<strong>① 优先保地基与筛选</strong>（要求 1～4 覆盖 P01、P02、P03 的大部分步骤，是最粗的柱子）；<strong>② 其次保移动主流程</strong>（P04、P05 都围绕移动）；<strong>③ 再保边界</strong>（边界禁用、空列表、只剩一条，常常是一个点是否拿满的决定因素）；<strong>④ 最后保持久化</strong>（实现简单、性价比高，一般不该砍）。</p>
+<div class="admonition question">
+<p class="admonition-title">考试怎么考</p>
+<p>从分值结构看：一个点 10 分、两个子场景全部通过才给分。所以时间紧张时，「让一个点彻底通」比「三个点各差一步」更划算。你在预览里验收时，也应该按「一个点走到底」的方式走，而不是每个功能都碰一下。</p>
+</div>
+<h2 id="296">29.6　禁止事项：六件绝对不能做的事<a class="headerlink" href="#296" title="Permanent link">&para;</a></h2>
+<p>这一节是本部分的「红线清单」。每一条都有明确的理由，违反它们轻则浪费 Token，重则直接丢分。</p>
+<h3 id="agent">禁区一：不要让 Agent 重写整个项目<a class="headerlink" href="#agent" title="Permanent link">&para;</a></h3>
+<p>「帮我把这个项目重写一遍」是最贵的一句话。它会烧掉大量 Token，还会把已经正确的原功能（添加、勾选、删除、清理）一起推倒重来——而平台正在用这些原功能给你打分。更糟的是，重写之后选择器和结构都可能变化，平台可能定位不到控件。<strong>要求增量修改，一次只动一个文件或一个函数。</strong></p>
+<div class="highlight"><pre><span></span><code>不要：「这个项目太乱了，你重构一下吧，把管理逻辑都重写。」
+而要：「只改 src/app.js 里的 moveUp 和 moveDown 两个函数，其它文件不要动；
+       修改后请说明你动了哪几行。」
+</code></pre></div>
+<h3 id="_1">禁区二：不要改题面、测试和启动脚本<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<p>题面写明：「题面、来源说明、许可证、启动脚本及测试内容固定。」这些东西是平台验收的依据。你唯一可以动的是 index.html、src/、assets/，或者在 src/ 与 assets/ 里新增源码和样式文件。<strong>如果 Agent 提议「我改一下测试就能过」，必须立刻制止。</strong></p>
+<h3 id="_2">禁区三：不要联网<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<p>「工作区不能联网」是硬条件。任何需要联网的方案（下载库、请求接口、CDN 资源）都会失败或不合规。这也是为什么持久化必须用浏览器本地存储。<strong>第一次对话就把「不要联网、不要下载任何依赖」说清楚。</strong></p>
+<h3 id="_3">禁区四：不要用「贴长日志」的方式沟通<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>把几百行运行日志整段贴进对话框，会让下一轮的输入变得非常大，而且日志里大部分内容跟问题无关。<strong>只贴关键几行，并说明「这是在点 C 上移之后打印的可见顺序和全清单顺序」。</strong></p>
+<div class="highlight"><pre><span></span><code>不要：一句「我把日志贴给你，你自己找问题」后面接 300 行输出。
+而要：「点 C 上移后，我让页面打印了数组：visible = [A, C]、full = [A, B, C, D]；
+       说明 move-up 只改了 visible 的顺序，没有改 full 里的下标。」
+</code></pre></div>
+<h3 id="_4">禁区五：不要要求与得分无关的功能<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>撤销、搜索、批量操作、拖拽排序、动画、深色模式……题面写得很清楚：「没有撤销、搜索或批量操作要求。」这些功能不加分，却会引入新的错误、增加代码体积、拉长 Agent 的思考时间。<strong>把每一次对话都花在八条要求上。</strong></p>
+<h3 id="_5">禁区六：不要在快没时间时开始「大改造」<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>离上限只剩几分钟时，最忌讳的是「我把它整体理一遍」。正确动作是：<strong>① 用最后几次交互确认最核心的行为是好的；② 如果某个小问题改不干净，就想办法绕开它；③ 保留一个能跑通的版本，准备提交。</strong></p>
+<div class="admonition warning">
+<p class="admonition-title">坑</p>
+<p>还有一个容易被忽略的纪律问题：不要反复让 Agent「再确认一次」同一件事。每问一次都要重新带上完整对话历史（第 30 章会讲这件事的代价）。同一件事问一次就够，剩下的靠页面预览来验证。</p>
+</div>
+<h2 id="297">29.7　第三题的对话方法：三条官方原则的落地写法<a class="headerlink" href="#297" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>官方原则</th>
+<th>第三题里的写法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>任务范围要明确</td>
+<td>每条指令写清三件事：要解决的问题、<strong>可观察的验收标准</strong>、涉及哪些控件或文件（例如 <code>select.task-subject</code>）</td>
+</tr>
+<tr>
+<td>先研究、再计划、后迭代</td>
+<td>第一条消息只让它读文件并给出改动计划（明确说"先不要改代码"），确认后再逐条实现</td>
+</tr>
+<tr>
+<td>检查它的工作</td>
+<td>用页面预览核对"可见行顺序""按钮禁用状态""刷新后是否恢复"；再让它逐条自查</td>
+</tr>
+</tbody>
+</table>
+<h2 id="298">29.8　可直接使用的第三题指令骨架<a class="headerlink" href="#298" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>第 1 条（只读）请阅读 index.html 与 src/，说明要实现【功能】需要改哪些文件与函数；先不要改代码。
+第 2 条（一个功能）请实现【功能】。要求：当【操作】发生时，页面应【可观察的结果】。注意不要改动【不该动的东西】。
+第 3 条（边界）请确保【边界条件】，例如当前可见第一条的上移按钮为原生 disabled。
+第 4 条（持久化）请把【需要保存的字段】写入浏览器本地存储并在刷新后恢复，不调用外网。
+第 5 条（自查）请不要改代码，逐条回答：①……②……③……
+</code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">技巧</p>
+<p>官方强调"只提供相关上下文"与"新任务开新对话"。在第三题里等价于：不让 Agent 读无关文件、不反复追问、把要求拆成 5～7 条指令逐条下达——既提高成功率，也直接省 Token（用量系数会乘在功能分上）。</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">本章要记住的 6 件事</p>
+<ul>
+<li>对话不是聊天，是下发工单：一次只改一件事，把八条要求排成 T1～T9 的任务队列，先地基后边界。</li>
+<li>指令用三拍句式：「前提 → 操作 → 预期」；八条示范指令覆盖科目、联合筛选、移动、禁用、持久化、空列表。</li>
+<li>移动的标准试纸是 A（数学）、B（英语）、C（数学）、D（未分类）：点 C 上移后数学视图是 C、A，<strong>全清单是 C、B、A、D</strong>，B 和 D 不动。</li>
+<li>纠正时用「操作 / 预期 / 实际 + 一句猜测」的模板；自查时问封闭的具体问题，不问开放问题。</li>
+<li>迭代纪律：主流程打通 → 边界逐条打卡 → 持久化 → 整体复核；时间不够时优先保「一个点彻底通」。</li>
+<li>六条禁区：不重写整个项目、不改题面测试与启动脚本、不联网、不贴长日志、不做无关功能、临近结束不做大改造。</li>
+</ul>
+</div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "navigation.indexes", "content.code.copy", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

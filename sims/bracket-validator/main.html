@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>括号序列合法性判定</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<h1>括号序列合法性判定</h1>
+<div class="row">
+  <label for="seq">序列：</label>
+  <input id="seq" value="(()(()()))" maxlength="32" spellcheck="false">
+  <button id="rand">随机生成</button>
+  <button id="clear">清空</button>
+</div>
+<div class="presets">
+  <span>公开测试点：</span>
+  <button data-s="(()(()()))">M01</button>
+  <button data-s="((())())()">M02</button>
+  <button data-s="())(()())(">M03</button>
+  <button data-s="((()())())(">M04</button>
+</div>
+<div id="steps" class="steps"></div>
+<div id="verdict" class="verdict"></div>
+<p class="hint">规则：① 从左到右，任意前缀的左括号数不能少于右括号数；② 整个序列左右括号数量相等。两条同时满足才是合法序列。</p>
+<script src="script.js"></script>
+</body></html>

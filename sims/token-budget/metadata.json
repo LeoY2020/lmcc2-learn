@@ -1,0 +1,54 @@
+{
+ "dublinCore": {
+  "title": "Token 预算计算器",
+  "creator": "LMCC 复习手册",
+  "subject": "考试额度与用量系数",
+  "description": "计算第一题 Prompt/生成额度与第三题用量系数",
+  "date": "2026",
+  "type": "InteractiveResource",
+  "format": "text/html",
+  "rights": "仅供学习使用"
+ },
+ "search": {
+  "tags": [
+   "token",
+   "budget",
+   "quota"
+  ],
+  "visualizationType": "calculator",
+  "keywords": [
+   "300 token",
+   "768 token",
+   "用量系数"
+  ]
+ },
+ "educational": {
+  "gradeLevel": "初一及以上",
+  "subjectArea": "考试策略",
+  "topic": "额度管理",
+  "learningObjectives": [
+   "换算调试次数与 token 消耗",
+   "用公式计算第三题最终得分"
+  ],
+  "bloomLevels": [
+   "Understand",
+   "Apply",
+   "Evaluate"
+  ]
+ },
+ "technical": {
+  "framework": "vanilla-js",
+  "canvasDimensions": "responsive",
+  "dependencies": [],
+  "accessibility": "数字输入可键盘操作"
+ },
+ "userInterface": {
+  "controls": [
+   "数字输入"
+  ],
+  "visualElements": [
+   "结果面板"
+  ],
+  "layoutPattern": "分节单列"
+ }
+}
